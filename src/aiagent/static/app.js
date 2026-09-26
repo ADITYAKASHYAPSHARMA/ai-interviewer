@@ -1,6 +1,6 @@
 /**
- * Aegis AI Interviewer — Frontend Application Controller
- * Handles UI state, Web Audio API visualizer, Web Speech API (STT/TTS), and REST API integration.
+ * J.A.R.V.I.S. Autonomous Interviewer — Frontend Application Controller
+ * Handles UI state, Web Audio API visualizer & SFX synthesizer, Web Speech API (STT/TTS), and calibrated REST API integration.
  */
 
 // Application State
@@ -8,17 +8,19 @@ const state = {
   currentView: 'setupView', // 'setupView' | 'interviewView' | 'scorecardView'
   sessionId: null,
   candidateName: 'Aditya Sharma',
-  selectedRole: 'fullstack',
-  selectedPersona: 'faang',
+  selectedRole: 'backend',
+  selectedPersona: 'jarvis',
   seniority: 'Senior',
   totalQuestions: 5,
   currentQuestion: 1,
   isRecording: false,
   isVoiceEnabled: true,
+  isSfxEnabled: true,
   timerInterval: null,
   timerSeconds: 0,
   rolesList: [],
   personasList: [],
+  transcript: [], // Local transcript resilience buffer
   speechSynthesis: window.speechSynthesis || null,
   recognition: null,
   audioContext: null,
@@ -31,8 +33,12 @@ const state = {
 // DOM Element References
 const elements = {
   // Navigation
+  brandHomeBtn: document.getElementById('brandHomeBtn'),
   providerStatusChip: document.getElementById('providerStatusChip'),
   providerStatusText: document.getElementById('providerStatusText'),
+  sfxToggleBtn: document.getElementById('sfxToggleBtn'),
+  sfxIcon: document.getElementById('sfxIcon'),
+  sfxStateLabel: document.getElementById('sfxStateLabel'),
   voiceToggleBtn: document.getElementById('voiceToggleBtn'),
   voiceIcon: document.getElementById('voiceIcon'),
   voiceStateLabel: document.getElementById('voiceStateLabel'),
@@ -74,6 +80,7 @@ const elements = {
   hintContentText: document.getElementById('hintContentText'),
   closeHintBtn: document.getElementById('closeHintBtn'),
   candidateAnswerInput: document.getElementById('candidateAnswerInput'),
+  telemetryDepthBadge: document.getElementById('telemetryDepthBadge'),
   micBtn: document.getElementById('micBtn'),
   micIcon: document.getElementById('micIcon'),
   micLabel: document.getElementById('micLabel'),
@@ -106,6 +113,75 @@ const elements = {
 };
 
 // ==========================================================================
+// HIGH-TECH AUDIO SFX SYNTHESIZER (WEB AUDIO API)
+// ==========================================================================
+function playJarvisSound(type) {
+  if (!state.isSfxEnabled) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    if (type === 'init') {
+      // High-tech power-up sweep
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.35);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    } else if (type === 'send') {
+      // Crisp digital blip
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.08);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } else if (type === 'receive') {
+      // Two-tone cyber chime
+      [0, 0.09].forEach((delay, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(idx === 0 ? 523.25 : 783.99, now + delay);
+        gain.gain.setValueAtTime(0.06, now + delay);
+        gain.gain.linearRampToValueAtTime(0.001, now + delay + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.12);
+      });
+    } else if (type === 'click') {
+      // Micro click
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1400, now);
+      gain.gain.setValueAtTime(0.03, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.03);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+  } catch (e) {
+    // Audio context may be restricted by autoplay policy
+  }
+}
+
+// ==========================================================================
 // INITIALIZATION
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -118,13 +194,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadMetadataAndHealth() {
   try {
     const [healthRes, rolesRes, personasRes] = await Promise.all([
-      fetch('/api/health').then(r => r.json()).catch(() => ({ active_provider: 'Offline Engine' })),
+      fetch('/api/health').then(r => r.json()).catch(() => ({ active_provider: 'J.A.R.V.I.S. Calibrated Engine' })),
       fetch('/api/roles').then(r => r.json()).catch(() => ({ roles: [] })),
       fetch('/api/personas').then(r => r.json()).catch(() => ({ personas: [] }))
     ]);
 
     if (healthRes.active_provider) {
-      elements.providerStatusText.textContent = `Provider: ${healthRes.active_provider}`;
+      elements.providerStatusText.textContent = `SYSTEM ONLINE // ${healthRes.active_provider.toUpperCase()}`;
     }
 
     state.rolesList = rolesRes.roles || [];
@@ -133,8 +209,8 @@ async function loadMetadataAndHealth() {
     renderRoles();
     renderPersonas();
   } catch (err) {
-    console.error('Error initializing metadata:', err);
-    elements.providerStatusText.textContent = 'Agent Ready (Local)';
+    console.error('Error initializing telemetry:', err);
+    elements.providerStatusText.textContent = 'J.A.R.V.I.S. CALIBRATED ENGINE ONLINE';
   }
 }
 
@@ -148,13 +224,14 @@ function renderRoles() {
     tile.className = `role-tile ${role.id === state.selectedRole ? 'selected' : ''}`;
     tile.dataset.roleId = role.id;
     tile.innerHTML = `
-      <div class="role-icon">${role.icon || '💼'}</div>
+      <div class="role-icon">${role.icon || '⚡'}</div>
       <div class="role-meta">
         <div class="role-meta-title">${escapeHtml(role.title)}</div>
         <div class="role-meta-desc">${escapeHtml(role.description)}</div>
       </div>
     `;
     tile.addEventListener('click', () => {
+      playJarvisSound('click');
       document.querySelectorAll('.role-tile').forEach(t => t.classList.remove('selected'));
       tile.classList.add('selected');
       state.selectedRole = role.id;
@@ -170,12 +247,11 @@ function renderPersonas() {
     tile.className = `persona-tile ${persona.id === state.selectedPersona ? 'selected' : ''}`;
     tile.dataset.personaId = persona.id;
     tile.innerHTML = `
-      <div class="persona-title-row">
-        <span class="persona-name">${escapeHtml(persona.name)}</span>
-      </div>
+      <div class="persona-name">${escapeHtml(persona.name)}</div>
       <div class="persona-tagline">${escapeHtml(persona.tagline)}</div>
     `;
     tile.addEventListener('click', () => {
+      playJarvisSound('click');
       document.querySelectorAll('.persona-tile').forEach(t => t.classList.remove('selected'));
       tile.classList.add('selected');
       state.selectedPersona = persona.id;
@@ -188,11 +264,30 @@ function renderPersonas() {
 // EVENT HANDLERS
 // ==========================================================================
 function bindEvents() {
+  // Brand Logo home click
+  elements.brandHomeBtn.addEventListener('click', () => {
+    playJarvisSound('click');
+    if (state.currentView !== 'setupView') {
+      switchView('setupView');
+      elements.headerEndBtn.classList.add('hidden');
+    }
+  });
+
+  // SFX Toggle
+  elements.sfxToggleBtn.addEventListener('click', () => {
+    state.isSfxEnabled = !state.isSfxEnabled;
+    elements.sfxStateLabel.textContent = state.isSfxEnabled ? 'ON' : 'OFF';
+    elements.sfxIcon.textContent = state.isSfxEnabled ? '🔊' : '🔇';
+    playJarvisSound('click');
+    showToast(`High-tech audio SFX ${state.isSfxEnabled ? 'enabled' : 'disabled'}`);
+  });
+
   // Voice Toggle
   elements.voiceToggleBtn.addEventListener('click', () => {
     state.isVoiceEnabled = !state.isVoiceEnabled;
     elements.voiceStateLabel.textContent = state.isVoiceEnabled ? 'ON' : 'OFF';
-    elements.voiceIcon.textContent = state.isVoiceEnabled ? '🔊' : '🔇';
+    elements.voiceIcon.textContent = state.isVoiceEnabled ? '🎙️' : '🔇';
+    playJarvisSound('click');
     if (!state.isVoiceEnabled && state.speechSynthesis) {
       state.speechSynthesis.cancel();
       stopAvatarSpeakingAnimation();
@@ -211,6 +306,9 @@ function bindEvents() {
       submitCandidateAnswer();
     }
   });
+
+  // Live depth meter updater
+  elements.candidateAnswerInput.addEventListener('input', updateInputDepthTelemetry);
 
   // Microphone toggle
   elements.micBtn.addEventListener('click', toggleMicrophone);
@@ -232,12 +330,32 @@ function bindEvents() {
 
   // Scorecard Actions
   elements.retakeInterviewBtn.addEventListener('click', () => {
+    playJarvisSound('click');
     switchView('setupView');
     elements.headerEndBtn.classList.add('hidden');
   });
 
   elements.exportReportBtn.addEventListener('click', exportReportJSON);
   elements.printReportBtn.addEventListener('click', () => window.print());
+}
+
+function updateInputDepthTelemetry() {
+  const text = elements.candidateAnswerInput.value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  const badge = elements.telemetryDepthBadge;
+
+  badge.className = 'telemetry-depth-badge';
+  if (words === 0) {
+    badge.textContent = 'DEPTH: 0 WORDS';
+  } else if (words < 15) {
+    badge.classList.add('warning');
+    badge.textContent = `DEPTH: ${words} WORDS // INSUFFICIENT ARCHITECTURE (PENALTY RISK)`;
+  } else if (words < 45) {
+    badge.textContent = `DEPTH: ${words} WORDS // MODERATE DEPTH`;
+  } else {
+    badge.classList.add('good');
+    badge.textContent = `DEPTH: ${words} WORDS // COMPREHENSIVE ARCHITECTURAL SUBSTANCE`;
+  }
 }
 
 // ==========================================================================
@@ -263,24 +381,28 @@ function switchView(viewId) {
 // INTERVIEW FLOW LOGIC
 // ==========================================================================
 async function startInterview() {
+  playJarvisSound('init');
   const name = elements.candidateNameInput.value.trim() || 'Candidate';
   state.candidateName = name;
   state.seniority = elements.senioritySelect.value;
   state.totalQuestions = parseInt(elements.questionCountSelect.value, 10);
 
   const selectedRoleObj = state.rolesList.find(r => r.id === state.selectedRole) || { title: 'Full-Stack Engineer' };
-  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'FAANG Bar Raiser' };
+  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'J.A.R.V.I.S. Protocol' };
 
   // Set Stage Headers
   elements.stagePersonaName.textContent = selectedPersonaObj.name;
   elements.stageRoleLabel.textContent = `${state.seniority} ${selectedRoleObj.title} Track`;
   elements.headerEndBtn.classList.remove('hidden');
 
+  // Clear buffers
+  state.transcript = [];
+
   // Switch to interview view
   switchView('interviewView');
   elements.messagesList.innerHTML = '';
   elements.interviewerTypingIndicator.classList.remove('hidden');
-  setInterviewerState('Preparing question...', true);
+  setInterviewerState('CALIBRATING DIAGNOSTICS...', true);
 
   // Initialize Progress Dots
   renderProgressDots(1, state.totalQuestions);
@@ -306,39 +428,58 @@ async function startInterview() {
       state.sessionId = data.session.id;
       state.currentQuestion = 1;
       updateProgressText(1, state.totalQuestions);
+
+      // Append to UI and local transcript
       appendMessage('interviewer', data.interviewer_message, 1);
+      state.transcript.push({
+        role: 'interviewer',
+        content: data.interviewer_message,
+        question_index: 1
+      });
+
+      playJarvisSound('receive');
       speakText(data.interviewer_message);
-      setInterviewerState('Listening to candidate', false);
+      setInterviewerState('SYSTEM LISTENING', false);
     } else {
-      showToast('Error initializing interview', 'error');
+      showToast('Error initializing assessment protocol', 'error');
     }
   } catch (err) {
     elements.interviewerTypingIndicator.classList.add('hidden');
     console.error('Failed to start interview:', err);
-    showToast('Failed to connect to backend', 'error');
+    showToast('Failed to establish backend neural link', 'error');
   }
 }
 
 async function submitCandidateAnswer() {
   const answer = elements.candidateAnswerInput.value.trim();
   if (!answer) {
-    showToast('Please enter or speak your answer first', 'warning');
+    playJarvisSound('click');
+    showToast('Formulate your technical answer or transmit audio first', 'warning');
     return;
   }
+
+  playJarvisSound('send');
 
   // Stop recording if active
   if (state.isRecording) {
     toggleMicrophone();
   }
 
-  // Append user message
+  // Append user message & log to transcript
   appendMessage('candidate', answer, state.currentQuestion);
+  state.transcript.push({
+    role: 'candidate',
+    content: answer,
+    question_index: state.currentQuestion
+  });
+
   elements.candidateAnswerInput.value = '';
+  updateInputDepthTelemetry();
   elements.hintAlertBox.classList.add('hidden');
 
   // Show typing indicator
   elements.interviewerTypingIndicator.classList.remove('hidden');
-  setInterviewerState('Analyzing response...', true);
+  setInterviewerState('CALIBRATING ACCURACY & DEPTH...', true);
   scrollConversationToBottom();
 
   try {
@@ -360,28 +501,36 @@ async function submitCandidateAnswer() {
       renderProgressDots(data.current_question, data.total_questions);
       
       appendMessage('interviewer', data.interviewer_message, data.current_question);
+      state.transcript.push({
+        role: 'interviewer',
+        content: data.interviewer_message,
+        question_index: data.current_question
+      });
+
+      playJarvisSound('receive');
       speakText(data.interviewer_message);
 
       if (data.is_completed) {
-        setInterviewerState('Interview Concluded', false);
+        setInterviewerState('ASSESSMENT CONCLUDED', false);
         setTimeout(() => finishInterviewAndEvaluate(), 3500);
       } else {
-        setInterviewerState('Listening to candidate', false);
+        setInterviewerState('SYSTEM LISTENING', false);
       }
     } else {
-      showToast('Error submitting response', 'error');
+      showToast('Error transmitting response', 'error');
     }
   } catch (err) {
     elements.interviewerTypingIndicator.classList.add('hidden');
     console.error('Error in respond:', err);
-    showToast('Failed to submit response', 'error');
+    showToast('Failed to transmit response', 'error');
   }
 }
 
 async function requestHint() {
   if (!state.sessionId) return;
+  playJarvisSound('click');
   elements.getHintBtn.disabled = true;
-  elements.getHintBtn.textContent = 'Fetching Hint...';
+  elements.getHintBtn.textContent = 'Analyzing Context...';
 
   try {
     const res = await fetch('/api/interview/hint', {
@@ -393,29 +542,41 @@ async function requestHint() {
     if (data.success && data.hint) {
       elements.hintContentText.textContent = data.hint;
       elements.hintAlertBox.classList.remove('hidden');
-      showToast('Hint generated', 'info');
+      playJarvisSound('receive');
+      showToast('Tactical hint generated', 'info');
     }
   } catch (err) {
     console.error('Error getting hint:', err);
   } finally {
     elements.getHintBtn.disabled = false;
-    elements.getHintBtn.textContent = '💡 Request Hint';
+    elements.getHintBtn.textContent = '💡 Request Tactical Hint';
   }
 }
 
 async function finishInterviewAndEvaluate() {
   if (!state.sessionId) return;
+  playJarvisSound('click');
   stopTimer();
   if (state.speechSynthesis) state.speechSynthesis.cancel();
   stopAvatarSpeakingAnimation();
 
-  showToast('Generating official evaluation scorecard...', 'info');
+  showToast('Synthesizing Calibrated Evaluation Dossier...', 'info');
+
+  const selectedRoleObj = state.rolesList.find(r => r.id === state.selectedRole) || { title: 'Engineer' };
+  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'J.A.R.V.I.S. Protocol' };
 
   try {
     const res = await fetch('/api/interview/finish', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: state.sessionId })
+      body: JSON.stringify({
+        session_id: state.sessionId,
+        candidate_name: state.candidateName,
+        role: selectedRoleObj.title,
+        level: state.seniority,
+        persona: selectedPersonaObj.name,
+        history: state.transcript
+      })
     });
 
     const data = await res.json();
@@ -423,48 +584,55 @@ async function finishInterviewAndEvaluate() {
       state.lastEvaluation = data.evaluation;
       renderScorecard(data);
       switchView('scorecardView');
+      playJarvisSound('init');
     } else {
-      showToast('Failed to generate scorecard', 'error');
+      showToast('Failed to finalize evaluation dossier', 'error');
     }
   } catch (err) {
     console.error('Error finishing interview:', err);
-    showToast('Evaluation error', 'error');
+    showToast('Evaluation calculation error', 'error');
   }
 }
 
 // ==========================================================================
-// SCORECARD RENDERING
+// SCORECARD RENDERING (STRICT CALIBRATION — ZERO FALSY DEFAULT BUGS)
 // ==========================================================================
 function renderScorecard(data) {
   const evalData = data.evaluation;
   elements.scoreCandidateHeadline.textContent = `${data.candidate_name || state.candidateName} — ${data.role}`;
-  elements.scoreExecutiveSummary.textContent = evalData.summary || 'Demonstrated technical competence and communication.';
+  elements.scoreExecutiveSummary.textContent = evalData.summary || 'Assessment evaluation compiled.';
 
-  // Overall Score & Verdict
-  const score = evalData.overall_score || 80;
+  // Overall Score — STRICT: Never default 0 to 80!
+  const score = evalData.overall_score !== undefined ? evalData.overall_score : 0;
   elements.overallScoreNum.textContent = score;
 
-  const verdict = evalData.verdict || 'Hire';
-  elements.hiringVerdictBadge.textContent = verdict;
+  // Verdict — Calibrated strictly
+  const rawVerdict = evalData.verdict || (score >= 80 ? 'Hire' : (score >= 65 ? 'Leaning Hire' : 'No Hire'));
+  elements.hiringVerdictBadge.textContent = rawVerdict.toUpperCase();
   elements.hiringVerdictBadge.className = 'verdict-badge';
-  if (verdict.toLowerCase().includes('strong hire') || verdict.toLowerCase() === 'hire') {
+
+  const vLower = rawVerdict.toLowerCase();
+  if (vLower.includes('strong hire')) {
+    elements.hiringVerdictBadge.classList.add('verdict-strong-hire');
+  } else if (vLower.includes('hire') && !vLower.includes('no hire') && !vLower.includes('leaning no')) {
     elements.hiringVerdictBadge.classList.add('verdict-hire');
-  } else if (verdict.toLowerCase().includes('leaning')) {
+  } else if (vLower.includes('leaning hire')) {
     elements.hiringVerdictBadge.classList.add('verdict-leaning');
   } else {
     elements.hiringVerdictBadge.classList.add('verdict-nohire');
   }
 
-  // 4 Pillar Skills
+  // 4 Pillar Skills — STRICT: Never default 0 to 80!
   const metrics = evalData.metrics || {};
-  setMetricBar(elements.pillarTechnical, elements.fillTechnical, metrics.technical_competence || 80);
-  setMetricBar(elements.pillarProblemSolving, elements.fillProblemSolving, metrics.problem_solving || 80);
-  setMetricBar(elements.pillarCommunication, elements.fillCommunication, metrics.communication_clarity || 85);
-  setMetricBar(elements.pillarSystematic, elements.fillSystematic, metrics.systematic_thinking || 80);
+  setMetricBar(elements.pillarTechnical, elements.fillTechnical, metrics.technical_competence !== undefined ? metrics.technical_competence : 0);
+  setMetricBar(elements.pillarProblemSolving, elements.fillProblemSolving, metrics.problem_solving !== undefined ? metrics.problem_solving : 0);
+  setMetricBar(elements.pillarCommunication, elements.fillCommunication, metrics.communication_clarity !== undefined ? metrics.communication_clarity : 0);
+  setMetricBar(elements.pillarSystematic, elements.fillSystematic, metrics.systematic_thinking !== undefined ? metrics.systematic_thinking : 0);
 
   // Strengths
   elements.strengthsList.innerHTML = '';
-  (evalData.strengths || []).forEach(s => {
+  const strengths = evalData.strengths && evalData.strengths.length > 0 ? evalData.strengths : ['No notable strengths demonstrated.'];
+  strengths.forEach(s => {
     const li = document.createElement('li');
     li.textContent = s;
     elements.strengthsList.appendChild(li);
@@ -472,7 +640,8 @@ function renderScorecard(data) {
 
   // Areas for Improvement
   elements.improvementsList.innerHTML = '';
-  (evalData.areas_for_improvement || []).forEach(imp => {
+  const improvements = evalData.areas_for_improvement && evalData.areas_for_improvement.length > 0 ? evalData.areas_for_improvement : ['Formulate concrete architectures with scalable trade-offs.'];
+  improvements.forEach(imp => {
     const li = document.createElement('li');
     li.textContent = imp;
     elements.improvementsList.appendChild(li);
@@ -481,33 +650,37 @@ function renderScorecard(data) {
   // Question Breakdown Accordion
   elements.questionsAccordion.innerHTML = '';
   (evalData.question_breakdown || []).forEach((q, idx) => {
+    const qScore = q.score !== undefined ? q.score : 0;
+    const isFail = qScore < 45;
+
     const item = document.createElement('div');
     item.className = 'accordion-item';
     item.innerHTML = `
       <div class="accordion-summary">
         <div class="accordion-title-wrap">
-          <span class="q-badge">Q${q.question_number || (idx + 1)}</span>
-          <span class="q-topic">${escapeHtml(q.question_topic || `Assessment Round ${idx + 1}`)}</span>
+          <span class="q-badge">ROUND ${q.question_number || (idx + 1)}</span>
+          <span class="q-topic">${escapeHtml(q.question_topic || `Assessment Part ${idx + 1}`)}</span>
         </div>
-        <span class="accordion-score">${q.score || 85}/100</span>
+        <span class="accordion-score ${isFail ? 'fail' : ''}">${qScore}/100</span>
       </div>
       <div class="accordion-body">
         <div class="qa-box">
-          <div class="qa-label candidate">Candidate Answer Summary</div>
-          <div class="qa-text">${escapeHtml(q.candidate_answer_summary || 'Answer provided.')}</div>
+          <div class="qa-label candidate">Submitted Candidate Response</div>
+          <div class="qa-text">${escapeHtml(q.candidate_answer_summary || 'No answer recorded.')}</div>
         </div>
         <div class="qa-box">
-          <div class="qa-label feedback">Interviewer Feedback</div>
-          <div class="qa-text">${escapeHtml(q.feedback || 'Good depth and clarity.')}</div>
+          <div class="qa-label feedback">J.A.R.V.I.S. Critique & Scoring Rationale</div>
+          <div class="qa-text">${escapeHtml(q.feedback || 'Zero technical substance demonstrated.')}</div>
         </div>
         <div class="qa-box">
-          <div class="qa-label ideal">Ideal Model Outline</div>
-          <div class="qa-text">${escapeHtml(q.ideal_answer_outline || 'Structured approach covering requirements, trade-offs, and edge cases.')}</div>
+          <div class="qa-label ideal">Architectural Benchmark Outline</div>
+          <div class="qa-text">${escapeHtml(q.ideal_answer_outline || 'Define requirements -> Propose architecture -> Address bottlenecks -> Observability & failure modes.')}</div>
         </div>
       </div>
     `;
 
     item.querySelector('.accordion-summary').addEventListener('click', () => {
+      playJarvisSound('click');
       const body = item.querySelector('.accordion-body');
       body.classList.toggle('hidden');
     });
@@ -517,24 +690,24 @@ function renderScorecard(data) {
 }
 
 function setMetricBar(labelEl, fillEl, val) {
-  const clamped = Math.max(0, Math.min(100, val));
+  const clamped = Math.max(0, Math.min(100, Math.round(val)));
   labelEl.textContent = `${clamped}%`;
   fillEl.style.width = `${clamped}%`;
 }
 
 function exportReportJSON() {
   if (!state.lastEvaluation) {
-    showToast('No evaluation data to export', 'warning');
+    showToast('No dossier data to export', 'warning');
     return;
   }
   const blob = new Blob([JSON.stringify(state.lastEvaluation, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `interview-scorecard-${state.sessionId || 'report'}.json`;
+  a.download = `jarvis-assessment-dossier-${state.sessionId || 'report'}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('Evaluation report downloaded', 'info');
+  showToast('Evaluation dossier downloaded', 'info');
 }
 
 // ==========================================================================
@@ -558,22 +731,26 @@ function setupSpeechRecognition() {
       transcript += event.results[i][0].transcript;
     }
     elements.candidateAnswerInput.value = transcript;
+    updateInputDepthTelemetry();
   };
 
   state.recognition.onerror = (event) => {
-    console.warn('Speech recognition error:', event.error);
+    console.warn('Speech recognition warning:', event.error);
     if (state.isRecording) toggleMicrophone();
   };
 
   state.recognition.onend = () => {
     if (state.isRecording) {
-      state.recognition.start();
+      try {
+        state.recognition.start();
+      } catch (e) {}
     }
   };
 }
 
 async function toggleMicrophone() {
   state.isRecording = !state.isRecording;
+  playJarvisSound('click');
 
   if (state.isRecording) {
     elements.micBtn.classList.add('recording');
@@ -612,7 +789,6 @@ async function startAudioVisualizer() {
 
     drawWaveform();
   } catch (err) {
-    // Canvas fallback wave if mic hardware permission is blocked
     drawMockWaveform();
   }
 }
@@ -635,7 +811,7 @@ function drawWaveform() {
 
     for (let i = 0; i < bufferLength; i++) {
       const barHeight = (dataArray[i] / 255) * canvas.height;
-      ctx.fillStyle = '#f43f5e';
+      ctx.fillStyle = '#00f5ff';
       ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
       x += barWidth;
     }
@@ -652,7 +828,7 @@ function drawMockWaveform() {
     if (!state.isRecording) return;
     state.visualizerAnimId = requestAnimationFrame(draw);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#f43f5e';
+    ctx.fillStyle = '#00f5ff';
 
     for (let i = 0; i < 20; i++) {
       const h = Math.abs(Math.sin(step + i * 0.4)) * 26 + 4;
@@ -678,11 +854,10 @@ function speakText(text) {
   if (!state.isVoiceEnabled || !state.speechSynthesis) return;
 
   state.speechSynthesis.cancel();
-  // Strip markdown formatting for cleaner speech
   const cleanText = text.replace(/[*#`_\[\]]/g, '').trim();
   const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.rate = 1.05;
-  utterance.pitch = 1.0;
+  utterance.rate = 1.02;
+  utterance.pitch = 0.98;
 
   utterance.onstart = () => startAvatarSpeakingAnimation();
   utterance.onend = () => stopAvatarSpeakingAnimation();
@@ -707,12 +882,12 @@ function stopAvatarSpeakingAnimation() {
 function appendMessage(role, content, qIndex) {
   const bubble = document.createElement('div');
   bubble.className = `chat-bubble ${role}`;
-  const senderLabel = role === 'interviewer' ? `AI Interviewer — Q${qIndex}` : `${state.candidateName}`;
+  const senderLabel = role === 'interviewer' ? `J.A.R.V.I.S. // ROUND ${qIndex}` : `${state.candidateName}`;
 
   bubble.innerHTML = `
     <div class="bubble-sender">
       <span>${senderLabel}</span>
-      <span style="opacity: 0.6; font-size: 0.7rem;">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      <span style="opacity: 0.65; font-size: 0.72rem; font-family: var(--font-mono);">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
     </div>
     <div class="bubble-content">${formatMarkdown(content)}</div>
   `;
@@ -724,11 +899,8 @@ function appendMessage(role, content, qIndex) {
 function formatMarkdown(text) {
   if (!text) return '';
   let formatted = escapeHtml(text);
-  // Bold
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  // Inline Code
   formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
-  // Newlines to paragraphs
   formatted = formatted.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
   return formatted;
 }
@@ -763,10 +935,10 @@ function renderProgressDots(current, total) {
   elements.stepProgressDots.innerHTML = '';
   for (let i = 1; i <= total; i++) {
     const dot = document.createElement('div');
-    dot.className = 'step-dot';
+    dot.className = 'step-dot font-mono';
     if (i === current) dot.classList.add('active');
     else if (i < current) dot.classList.add('done');
-    dot.textContent = `Q${i}`;
+    dot.textContent = `R${i}`;
     elements.stepProgressDots.appendChild(dot);
   }
 }
@@ -787,8 +959,8 @@ function stopTimer() {
 }
 
 function showToast(message, type = 'info') {
-  const icons = { info: 'ℹ️', warning: '⚠️', error: '❌', success: '✅' };
-  elements.toastIcon.textContent = icons[type] || 'ℹ️';
+  const icons = { info: '⚡', warning: '⚠️', error: '❌', success: '✅' };
+  elements.toastIcon.textContent = icons[type] || '⚡';
   elements.toastMsg.textContent = message;
   elements.toastNotification.classList.remove('hidden');
 

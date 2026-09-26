@@ -1,37 +1,42 @@
-# ⚡ Aegis AI — Autonomous Job Interviewer Agent & Career Coach
+# ⚡ J.A.R.V.I.S. — Autonomous Career Intelligence & Assessment Engine
 
-An intelligent, full-stack **AI Job Interviewer Agent** built with **LangChain**, **FastAPI**, and modern **Web Speech & Audio APIs**. Aegis conducts realistic, adaptive technical and behavioral interviews with real-time speech synthesis, live microphone transcription, dynamic follow-ups, and instant Hiring Committee evaluation scorecards.
+**J.A.R.V.I.S.** (*Just A Rather Very Intelligent System*) is a full-stack, autonomous **AI Technical Assessor and Career Coach** built with **LangChain**, **FastAPI**, and modern **Web Speech & Audio APIs**. Designed with a high-tech Stark Industries HUD aesthetic, J.A.R.V.I.S. conducts realistic, adaptive technical interviews with real-time speech synthesis, live microphone transcription, dynamic architectural probing, and strictly calibrated Bar-Raiser evaluation scorecards.
 
 ---
 
 ## 🌟 Key Features
 
-- **🎙️ Real-Time Voice & Audio Interaction**:
-  - **Speech-to-Text**: Voice transcription directly into the candidate answer dock.
-  - **Text-to-Speech**: Realistic AI voice synthesis reading questions aloud.
-  - **Live Frequency Waveform**: Web Audio API canvas visualizer displaying audio waves while speaking.
-- **🧠 Multi-Provider LLM Engine with Automatic Failover**:
+- **🎯 Calibrated Accuracy & Anti-Hallucination Grading Engine**:
+  - **Evidence-Based Scoring**: Evaluates only the technical substance actually demonstrated.
+  - **Zero Tolerance for Fluff**: Evasive answers, random text, or gibberish ("idk", "asdf", buzzword stuffing) are penalized with 0–15/100 and an immediate "No Hire" verdict.
+  - **Calibrated Heuristic Fallback**: Deterministic analysis ensures fair and rigorous scoring even if offline or during network timeouts—preventing arbitrary high scores.
+- **🎙️ Real-Time Voice Cognition & Audio HUD**:
+  - **Holographic Arc Reactor HUD**: Animated multi-ring Arc Reactor avatar with concentric rotating rings and real-time frequency-reactive wave displays.
+  - **Speech-to-Text (STT)**: Voice transcription streaming directly into the candidate answer dock.
+  - **Text-to-Speech (TTS)**: Crisp J.A.R.V.I.S. voice synthesis reciting questions aloud.
+  - **Web Audio SFX Synthesizer**: High-tech cyber telemetry chimes, activation sweeps, and digital feedback.
+- **🧠 Multi-Provider LLM Engine with Instant Failover**:
   - Primary: **Groq** (`qwen/qwen3.8-27b`, `openai/gpt-oss-120b`) for ultra-low latency conversational streaming.
   - Fallback 1: **Google Gemini** (`gemini-2.5-flash`).
   - Fallback 2: **OpenAI** (`gpt-4o-mini`).
-  - Fallback 3: **Smart Offline Engine** so the interview never crashes if offline.
-- **🎭 Customizable Interviewer Personas**:
-  - **FAANG Bar Raiser**: Rigorous, probing edge cases, scalability, and optimal complexity.
-  - **Friendly Mentor**: Warm, encouraging, offering positive reinforcement and guidance.
-  - **Startup CTO**: Pragmatic, fast-paced, focusing on shipping fast and real-world trade-offs.
-  - **Pragmatic Tech Lead**: Balanced between code craftsmanship, maintainability, and team velocity.
+  - Fallback 3: **J.A.R.V.I.S. Heuristic Engine** for deterministic local assessment.
+- **🎭 High-Tech Assessment Protocols (Personas)**:
+  - **J.A.R.V.I.S. Protocol**: Ultra-intelligent, polite yet exacting, deeply analytical, strictly verifies technical accuracy and trade-offs.
+  - **FAANG Bar Raiser**: Formal, probing edge cases, scalability limits, and optimal complexity.
+  - **Staff Architect Protocol**: Focuses on clean architecture, boundary isolation, maintainability, and clear communication.
+  - **Startup CTO Protocol**: Pragmatic, fast-paced, testing real-world incident recovery and execution velocity.
 - **🎯 Tailored Career Tracks & Difficulty**:
   - Full-Stack Engineer, Backend Systems, Frontend Architect, AI/ML & LLM Engineer, Data Science, DevOps/Cloud, Product Manager, and Behavioral (STAR).
   - Seniority levels: *Junior (0-2 YOE)*, *Mid-Level (2-5 YOE)*, *Senior (5-8 YOE)*, *Lead / Staff Architect (8+ YOE)*.
-- **💡 Real-Time Assistance & Adaptive Probing**:
-  - Smart **"Request Hint"** button to guide candidates without giving away solutions.
-  - Contextual reactions and dynamic follow-up questions based on the candidate's previous responses.
-- **📊 Executive Evaluation Scorecard**:
-  - **Overall Score (0-100)** and Hiring Recommendation Badge (*Strong Hire*, *Hire*, *Leaning Hire*, *No Hire*).
-  - **4-Axis Pillar Skills**: Technical Competence, Problem Solving & Logic, Communication & Clarity, Systematic Thinking.
-  - **Strengths & Growth Areas**: Actionable feedback bullets.
-  - **Question-by-Question Deep Dive**: Candidate response summaries, individual scores, feedback, and ideal model answer outlines.
-  - **Export Options**: Download Report as JSON or Print/Save to PDF.
+- **💡 Real-Time Assistance & Architectural Depth Telemetry**:
+  - Smart **"Request Tactical Hint"** button to guide candidates without giving away solutions.
+  - Live **Depth Telemetry Counter** indicating response word count and warning against shallow submissions.
+- **📊 Executive Assessment Dossier & Scorecard**:
+  - **Overall Score (0-100)** and Calibrated Verdict Badge (*Strong Hire*, *Hire*, *Leaning Hire*, *Leaning No Hire*, *No Hire*).
+  - **4-Axis Pillar Skills**: Technical Competence, Problem Solving & Logic, Communication & Precision, Systematic Architecture.
+  - **Validated Strengths & Critical Growth Areas**: Actionable feedback bullets.
+  - **Round-by-Round Breakdown**: Candidate response summaries, individual scores, critique, and ideal architectural benchmark outlines.
+  - **Export Options**: Download Dossier as JSON or Print/Save to PDF.
 
 ---
 
@@ -39,16 +44,20 @@ An intelligent, full-stack **AI Job Interviewer Agent** built with **LangChain**
 
 ```mermaid
 graph TD
-    Client["Frontend SPA (Web Audio / Speech / Glassmorphic UI)"]
+    Client["Frontend SPA (Arc Reactor HUD / Web Speech / Web Audio SFX)"]
     FastAPI["FastAPI Web Server (aiagent.server)"]
     Agent["InterviewAgent Lifecycle Engine (aiagent.agent)"]
+    Detector["Response Quality & Gibberish Detector"]
     LLMChain["Multi-Provider LLM Fallback (Groq / Gemini / OpenAI)"]
-    Scorecard["Hiring Committee Evaluator"]
+    Heuristic["Calibrated Heuristic Scorer"]
+    Dossier["Hiring Committee Evaluator"]
 
     Client <-->|REST API + Web Speech| FastAPI
     FastAPI <--> Agent
+    Agent --> Detector
     Agent <--> LLMChain
-    Agent --> Scorecard
+    LLMChain -.->|Fallback if offline| Heuristic
+    Agent --> Dossier
 ```
 
 ---
@@ -56,11 +65,11 @@ graph TD
 ## 🚀 Quickstart (Local Development)
 
 ### 1. Prerequisites
-- Python `>= 3.13`
-- [`uv`](https://github.com/astral-sh/uv) (recommended) or `pip`
+- Python `>= 3.10`
+- Virtual environment or `uv` / `pip`
 
 ### 2. Environment Variables
-Create or verify your `.env` file in the project root:
+Verify your `.env` file in the project root:
 ```env
 # At least one key is required for live AI responses (Groq is recommended for ultra-fast speed)
 GROQ_API_KEY=gsk_your_groq_api_key_here
@@ -68,25 +77,21 @@ GOOGLE_API_KEY=your_google_gemini_api_key_here
 OPENAI_API_KEY=sk-your_openai_key_here
 ```
 
-### 3. Run the Application (Single Command)
+### 3. Run the Application
 
-Using `uv`:
+Using the existing virtual environment:
 ```bash
-uv run aiagent
-```
-*Alternatively, using uvicorn directly:*
-```bash
-uv run uvicorn aiagent.server:app --host 0.0.0.0 --port 8000 --reload
+./.venv/bin/uvicorn aiagent.server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Using standard `pip` and Python:
+Or using standard Python:
 ```bash
 pip install -r requirements.txt
 python -m aiagent
 ```
 
 ### 4. Open in Browser
-Visit **[http://localhost:8000](http://localhost:8000)** to start your interview!
+Visit **[http://localhost:8000](http://localhost:8000)** to engage J.A.R.V.I.S.!
 
 ---
 
@@ -96,38 +101,29 @@ The repository comes pre-configured with `vercel.json` and `api/index.py` for im
 
 ### Option A: Deploy to Vercel via GitHub (Recommended)
 
-1. **Push your code to GitHub**:
+1. **Commit and push your code to GitHub**:
    ```bash
    git add .
-   git commit -m "Deploy AI Interviewer to Vercel"
-   git branch -M main
-   git push -u origin main
+   git commit -m "feat: J.A.R.V.I.S. high-tech HUD & calibrated accuracy engine"
+   git push origin main
    ```
 2. **Import into Vercel**:
    - Go to [vercel.com/new](https://vercel.com/new) and select your GitHub repository.
-   - Framework Preset: Select **Other** (Vercel will automatically detect `vercel.json` and `@vercel/python`).
+   - Framework Preset: Select **Other** (Vercel automatically detects `vercel.json` and `@vercel/python`).
 3. **Configure Environment Variables**:
    In the Vercel project settings under **Environment Variables**, add:
    - `GROQ_API_KEY`: Your Groq API key
    - `GOOGLE_API_KEY`: Your Google Gemini API key
    - `OPENAI_API_KEY`: Your OpenAI API key
-4. **Click Deploy**:
-   Vercel will build the serverless functions and provide your live production URL (e.g., `https://your-aiagent.vercel.app`).
+4. **Deploy**:
+   Vercel will build the serverless functions and provide your live production URL (e.g., `https://aiagent-liart.vercel.app`).
 
 ### Option B: Deploy via Vercel CLI
 
 ```bash
-# Install Vercel CLI if not already installed
-npm install -g vercel
-
 # Log in and deploy
-vercel
+vercel --prod
 ```
-When prompted during CLI deployment:
-- Link to existing project? `N`
-- Project name: `aegis-aiagent`
-- In which directory is your code located? `./`
-- Set your environment variables when prompted or in the Vercel web dashboard.
 
 ---
 
@@ -136,7 +132,7 @@ When prompted during CLI deployment:
 ```
 aiagent/
 ├── .env                           # API keys (local only, gitignored)
-├── .gitignore                     # Ignores .venv, .env, and caches
+├── .gitignore                     # Ignores .venv, .env, .vercel, caches
 ├── pyproject.toml                 # Project dependencies & scripts
 ├── requirements.txt               # Production requirements for Vercel/Pip
 ├── vercel.json                    # Vercel serverless routing configuration
@@ -145,13 +141,13 @@ aiagent/
 ├── README.md                      # Project documentation
 ├── src/
 │   └── aiagent/
-│       ├── __init__.py            # CLI entrypoint (uv run aiagent)
-│       ├── agent.py               # Core LangChain Interview Engine & Prompts
-│       ├── server.py              # FastAPI REST endpoints & SPA server
+│       ├── __init__.py            # CLI entrypoint
+│       ├── agent.py               # J.A.R.V.I.S. Core Engine, Accuracy Rubric & Calibrated Scorer
+│       ├── server.py              # FastAPI REST endpoints & Resilient Session Hydration
 │       └── static/
-│           ├── index.html         # Single-Page Application interface
-│           ├── styles.css         # Glassmorphism dark cyberpunk design
-│           └── app.js             # Web Speech, Audio Visualizer, & state controller
+│           ├── index.html         # High-Tech Arc Reactor HUD Interface
+│           ├── styles.css         # Cyber Obsidian & Stark Arc Reactor Design System
+│           └── app.js             # Web Speech, Audio SFX, Visualizer & Calibrated Controller
 └── updatedaiagent/
     └── 1-aiagent.ipynb            # Interactive step-by-step Jupyter Notebook tutorial
 ```
@@ -162,14 +158,14 @@ aiagent/
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
-| `/api/health` | `GET` | Health check & active LLM provider status |
-| `/api/roles` | `GET` | Available preset career tracks |
-| `/api/personas` | `GET` | Available interviewer personas |
-| `/api/interview/start` | `POST` | Initialize a session & receive Question 1 |
-| `/api/interview/respond` | `POST` | Submit candidate answer & receive next question/follow-up |
-| `/api/interview/hint` | `POST` | Request a guiding hint for the active question |
-| `/api/interview/finish` | `POST` | Complete interview & generate comprehensive evaluation scorecard |
-| `/api/interview/session/{id}` | `GET` | Retrieve full interview transcript & history |
+| `/api/health` | `GET` | Health check & active LLM provider telemetry |
+| `/api/roles` | `GET` | Available career tracks |
+| `/api/personas` | `GET` | Available J.A.R.V.I.S. assessment protocols |
+| `/api/interview/start` | `POST` | Initialize an assessment session & receive Round 1 |
+| `/api/interview/respond` | `POST` | Submit candidate answer, receive feedback & next diagnostic question |
+| `/api/interview/hint` | `POST` | Request an architectural tactical hint |
+| `/api/interview/finish` | `POST` | Complete interview & generate comprehensive evaluation dossier |
+| `/api/interview/session/{id}` | `GET` | Retrieve full interview transcript & telemetry |
 
 ---
 

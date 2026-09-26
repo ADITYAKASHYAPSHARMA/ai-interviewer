@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aegis AI — Autonomous Job Interviewer & Career Coach</title>
-  <meta name="description" content="State-of-the-art interactive AI job interviewer agent with voice synthesis, real-time dynamic questioning, speech recognition, and instant hiring committee scorecard evaluation." />
+  <title>J.A.R.V.I.S. — Autonomous Career Intelligence & Technical Assessment System</title>
+  <meta name="description" content="State-of-the-art interactive J.A.R.V.I.S. AI technical interviewer agent with real-time speech cognition, dynamic questioning, and strictly calibrated Bar-Raiser evaluation scorecards." />
   
-  <!-- Google Fonts: Outfit & Inter -->
+  <!-- High-Tech Google Fonts: Orbitron, Rajdhani, Chakra Petch, Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
   
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <!-- Ambient Gradient Background Orbs -->
+  <!-- High-Tech Cyber Scanlines & Matrix Grid Overlay -->
+  <div class="hud-scanline-overlay"></div>
+  <div class="cyber-grid-backdrop"></div>
+
+  <!-- Ambient Arc Reactor Glow Orbs -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
   <div class="ambient-glow glow-3"></div>
@@ -23,47 +27,50 @@
   <!-- Top App Navigation -->
   <header class="app-header" id="appHeader">
     <div class="nav-container">
-      <div class="brand">
-        <div class="brand-logo-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 17L12 22L22 17" stroke="url(#paint1_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="url(#paint2_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <div class="brand" id="brandHomeBtn">
+        <!-- Holographic Arc Reactor Brand Icon -->
+        <div class="brand-reactor-icon">
+          <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#00f5ff" stroke-width="2" stroke-opacity="0.3" stroke-dasharray="6 4" />
+            <circle cx="50" cy="50" r="38" stroke="#00f5ff" stroke-width="3" stroke-opacity="0.7" />
+            <circle cx="50" cy="50" r="26" stroke="#0070f3" stroke-width="2" stroke-dasharray="12 4" />
+            <polygon points="50,28 69,63 31,63" stroke="#00f5ff" stroke-width="2" fill="none" opacity="0.6" />
+            <polygon points="50,72 31,37 69,37" stroke="#ffd166" stroke-width="1.5" fill="none" opacity="0.5" />
+            <circle cx="50" cy="50" r="14" fill="url(#coreGradient)" />
+            <circle cx="50" cy="50" r="6" fill="#ffffff" />
             <defs>
-              <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#38BDF8"/>
-                <stop offset="1" stop-color="#818CF8"/>
-              </linearGradient>
-              <linearGradient id="paint1_linear" x1="2" y1="17" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#818CF8"/>
-                <stop offset="1" stop-color="#C084FC"/>
-              </linearGradient>
-              <linearGradient id="paint2_linear" x1="2" y1="12" x2="22" y2="17" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#38BDF8"/>
-                <stop offset="1" stop-color="#C084FC"/>
-              </linearGradient>
+              <radialGradient id="coreGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="40%" stop-color="#00f5ff" />
+                <stop offset="100%" stop-color="#0070f3" />
+              </radialGradient>
             </defs>
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-title">Aegis <span class="gradient-text">Interview AI</span></span>
-          <span class="brand-badge">Agent 2.0</span>
+          <span class="brand-title">J.A.R.V.I.S. <span class="hud-highlight">ASSESSOR</span></span>
+          <span class="brand-telemetry">SYS.VER: 4.2-CALIBRATED // STARK COGNITIVE ENGINE</span>
         </div>
       </div>
 
       <div class="header-controls">
         <div class="status-chip" id="providerStatusChip">
           <span class="status-dot pulse"></span>
-          <span id="providerStatusText">Connecting Agent Engine...</span>
+          <span id="providerStatusText">SYSTEM INITIALIZING...</span>
         </div>
 
-        <button class="icon-toggle-btn" id="voiceToggleBtn" title="Toggle AI Voice Speech Synthesis" aria-label="Toggle Voice">
-          <span class="btn-icon" id="voiceIcon">🔊</span>
-          <span class="btn-text">AI Voice: <strong id="voiceStateLabel">ON</strong></span>
+        <button class="hud-toggle-btn" id="sfxToggleBtn" title="Toggle High-Tech Audio Feedback (SFX)">
+          <span class="btn-icon" id="sfxIcon">🔊</span>
+          <span class="btn-text">SFX: <strong id="sfxStateLabel">ON</strong></span>
+        </button>
+
+        <button class="hud-toggle-btn" id="voiceToggleBtn" title="Toggle AI Voice Speech Synthesis">
+          <span class="btn-icon" id="voiceIcon">🎙️</span>
+          <span class="btn-text">Voice: <strong id="voiceStateLabel">ON</strong></span>
         </button>
 
         <button class="danger-btn-sm hidden" id="headerEndBtn">
-          End & Evaluate
+          TERMINATE & EVALUATE
         </button>
       </div>
     </div>
@@ -75,74 +82,81 @@
     <!-- VIEW 1: SETUP & CONFIGURATION SCREEN -->
     <section class="view-section active" id="setupView">
       <div class="setup-hero">
-        <div class="hero-badge">⚡ Next-Gen Autonomous AI Interviewer</div>
-        <h1 class="hero-title">Master Your Next Technical & Behavioral <span class="gradient-text">Interview</span></h1>
-        <p class="hero-subtitle">Experience realistic, adaptive technical rounds with real-time audio interaction, deep-dive follow-ups, and instant hiring committee scorecards.</p>
+        <div class="hero-hud-badge">
+          <span class="badge-laser"></span>
+          [ PROTOCOL INITIALIZATION: LEVEL 5 CLEARANCE ]
+        </div>
+        <h1 class="hero-title">J.A.R.V.I.S. <span class="gradient-text">AUTONOMOUS ASSESSOR</span></h1>
+        <p class="hero-subtitle">
+          Experience rigorous, adaptive technical rounds with real-time speech synthesis, deep architectural probing, and strictly calibrated Bar-Raiser grading. Precision is enforced; superficial answers are scrutinized.
+        </p>
       </div>
 
       <div class="setup-grid">
-        <!-- Configuration Card -->
-        <div class="glass-card setup-card">
+        <!-- Candidate Profile Card -->
+        <div class="glass-card setup-card hud-corner-card">
           <div class="card-header">
-            <h2 class="card-title"><span class="step-num">1</span> Candidate Profile</h2>
-            <p class="card-desc">Personalize your interview track and difficulty.</p>
+            <h2 class="card-title"><span class="step-num">01</span> Candidate Telemetry</h2>
+            <p class="card-desc">Configure your assessment track and difficulty parameters.</p>
           </div>
 
           <div class="form-group">
-            <label for="candidateNameInput">Your Name</label>
-            <input type="text" id="candidateNameInput" class="custom-input" placeholder="e.g. Alex Mercer" value="Aditya Sharma" />
+            <label for="candidateNameInput">Candidate Identity</label>
+            <input type="text" id="candidateNameInput" class="custom-input hud-input" placeholder="e.g. Tony Stark" value="Aditya Sharma" />
           </div>
 
           <div class="form-group">
-            <label>Select Target Role</label>
+            <label>Target Engineering Specialization</label>
             <div class="roles-grid" id="rolesGrid">
-              <!-- Dynamically populated from backend or defaults -->
+              <!-- Dynamically populated from backend -->
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group flex-1">
-              <label for="senioritySelect">Seniority Level</label>
-              <select id="senioritySelect" class="custom-select">
-                <option value="Junior">Junior (0-2 YOE)</option>
-                <option value="Mid-Level">Mid-Level (2-5 YOE)</option>
-                <option value="Senior" selected>Senior (5-8 YOE)</option>
-                <option value="Lead / Staff">Lead / Staff Architect (8+ YOE)</option>
+              <label for="senioritySelect">Target Seniority Level</label>
+              <select id="senioritySelect" class="custom-select hud-select">
+                <option value="Junior">Junior Engineer (0-2 YOE)</option>
+                <option value="Mid-Level">Mid-Level Engineer (2-5 YOE)</option>
+                <option value="Senior" selected>Senior Staff / Specialist (5-8 YOE)</option>
+                <option value="Lead / Staff">Lead / Principal Architect (8+ YOE)</option>
               </select>
             </div>
 
             <div class="form-group flex-1">
-              <label for="questionCountSelect">Interview Questions</label>
-              <select id="questionCountSelect" class="custom-select">
-                <option value="3">Quick Sprint (3 Questions)</option>
-                <option value="5" selected>Standard Round (5 Questions)</option>
-                <option value="7">Comprehensive Deep Dive (7 Questions)</option>
+              <label for="questionCountSelect">Assessment Rounds</label>
+              <select id="questionCountSelect" class="custom-select hud-select">
+                <option value="3">Tactical Sprint (3 Rounds)</option>
+                <option value="5" selected>Standard Assessment (5 Rounds)</option>
+                <option value="7">Comprehensive Deep Dive (7 Rounds)</option>
               </select>
             </div>
           </div>
         </div>
 
-        <!-- Persona & Style Card -->
-        <div class="glass-card setup-card">
+        <!-- Persona Protocol Card -->
+        <div class="glass-card setup-card hud-corner-card">
           <div class="card-header">
-            <h2 class="card-title"><span class="step-num">2</span> Interviewer Style</h2>
-            <p class="card-desc">Choose the personality and evaluation rigor.</p>
+            <h2 class="card-title"><span class="step-num">02</span> Assessment Protocol</h2>
+            <p class="card-desc">Select the interviewer personality and evaluation rigor.</p>
           </div>
 
           <div class="personas-grid" id="personasGrid">
             <!-- Dynamically populated -->
           </div>
 
-          <!-- Feature Highlights / Preparation Tips -->
-          <div class="prep-tips-box">
-            <div class="prep-tip-title">🎙️ Audio & Speech Capabilities</div>
-            <p class="prep-tip-desc">You can answer by speaking into your microphone or typing in code/text. AI will voice questions out loud with speech synthesis.</p>
+          <!-- Feature Highlights / Calibration Notice -->
+          <div class="prep-tips-box hud-tip-box">
+            <div class="prep-tip-title">⚡ CALIBRATED ACCURACY NOTICE</div>
+            <p class="prep-tip-desc">
+              J.A.R.V.I.S. employs strict rubric-based grading. Answers lacking architecture, scale trade-offs, or containing nonsensical/evasive text will be heavily penalized. Provide concrete mechanisms and failure modes for optimal scoring.
+            </p>
           </div>
 
-          <button class="primary-launch-btn" id="startInterviewBtn">
-            <span class="btn-sparkle">✨</span>
-            <span>Begin Live Interview</span>
-            <span class="btn-arrow">→</span>
+          <button class="primary-launch-btn hud-launch-btn" id="startInterviewBtn">
+            <span class="btn-sparkle">⚡</span>
+            <span>ENGAGE J.A.R.V.I.S. PROTOCOL</span>
+            <span class="btn-arrow">▶</span>
           </button>
         </div>
       </div>
@@ -154,28 +168,29 @@
         
         <!-- Left Sidebar: Interviewer Info & Progress -->
         <aside class="interview-sidebar">
-          <div class="glass-card interviewer-card">
-            <!-- Avatar with dynamic aura -->
+          <div class="glass-card interviewer-card hud-corner-card">
+            
+            <!-- Holographic Arc Reactor Core -->
             <div class="avatar-container">
               <div class="avatar-pulse-ring" id="avatarPulse"></div>
-              <div class="avatar-box" id="avatarBox">
-                <div class="avatar-visual" id="avatarVisual">
-                  <div class="avatar-face">
-                    <span class="avatar-eyes">👀</span>
-                    <div class="avatar-voice-wave" id="voiceWavePill">
-                      <span></span><span></span><span></span><span></span><span></span>
-                    </div>
-                  </div>
+              <div class="arc-reactor-avatar" id="arcReactorAvatar">
+                <!-- Concentric spinning rings -->
+                <div class="reactor-outer-ring"></div>
+                <div class="reactor-inner-ring"></div>
+                <div class="reactor-core-glow"></div>
+                <div class="reactor-center-point"></div>
+                <div class="reactor-frequency-waves" id="voiceWavePill">
+                  <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                 </div>
               </div>
             </div>
 
             <div class="interviewer-details">
-              <h3 class="interviewer-name" id="stagePersonaName">FAANG Bar Raiser</h3>
-              <p class="interviewer-role" id="stageRoleLabel">Senior Full-Stack Engineer Track</p>
+              <h3 class="interviewer-name" id="stagePersonaName">J.A.R.V.I.S. Protocol</h3>
+              <p class="interviewer-role" id="stageRoleLabel">Senior Track Assessment</p>
               <div class="interviewer-status-tag" id="interviewerStatusTag">
                 <span class="status-indicator"></span>
-                <span id="interviewerStateText">Listening</span>
+                <span id="interviewerStateText">SYSTEM READY</span>
               </div>
             </div>
 
@@ -184,12 +199,12 @@
             <!-- Timer & Question Progress -->
             <div class="interview-metrics">
               <div class="metric-item">
-                <span class="metric-label">Elapsed Time</span>
-                <span class="metric-val" id="interviewTimer">00:00</span>
+                <span class="metric-label">ELAPSED TIME</span>
+                <span class="metric-val font-mono" id="interviewTimer">00:00</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Question Progress</span>
-                <span class="metric-val" id="questionProgressText">1 of 5</span>
+                <span class="metric-label">ROUND PROGRESS</span>
+                <span class="metric-val font-mono" id="questionProgressText">1 of 5</span>
               </div>
             </div>
 
@@ -199,11 +214,11 @@
             </div>
 
             <div class="sidebar-actions">
-              <button class="secondary-action-btn" id="getHintBtn">
-                💡 Request Hint
+              <button class="secondary-action-btn hud-action-btn" id="getHintBtn">
+                💡 Request Tactical Hint
               </button>
-              <button class="danger-outline-btn" id="finishEarlyBtn">
-                Finish & Evaluate Score
+              <button class="danger-outline-btn hud-danger-btn" id="finishEarlyBtn">
+                Terminate & Finalize Score
               </button>
             </div>
           </div>
@@ -217,7 +232,7 @@
               <!-- Interviewer & candidate messages dynamically appended -->
             </div>
             <div class="typing-indicator hidden" id="interviewerTypingIndicator">
-              <div class="typing-avatar">🤖</div>
+              <div class="typing-avatar">⚡</div>
               <div class="typing-bubble">
                 <span class="dot"></span>
                 <span class="dot"></span>
@@ -229,18 +244,18 @@
           <!-- Live Mic Visualizer & Audio Canvas Bar -->
           <div class="audio-visualizer-bar hidden" id="audioVisualizerBar">
             <div class="audio-live-tag">
-              <span class="rec-dot"></span> RECORDING LIVE AUDIO
+              <span class="rec-dot"></span> LIVE AUDIO STREAM // NEURAL SPEECH ACTIVE
             </div>
             <canvas id="waveformCanvas" class="waveform-canvas" width="400" height="36"></canvas>
-            <button class="stop-rec-btn" id="stopRecordingBtn">Done Speaking (Submit)</button>
+            <button class="stop-rec-btn" id="stopRecordingBtn">TRANSCRIBE & SUBMIT</button>
           </div>
 
           <!-- Answer Input Control Dock -->
-          <div class="answer-dock glass-card">
+          <div class="answer-dock glass-card hud-corner-card">
             <!-- Hint Display Box (if requested) -->
             <div class="hint-alert-box hidden" id="hintAlertBox">
               <div class="hint-header">
-                <span>💡 Interviewer Hint</span>
+                <span>💡 J.A.R.V.I.S. TACTICAL HINT</span>
                 <button class="hint-close-btn" id="closeHintBtn">✕</button>
               </div>
               <p class="hint-content" id="hintContentText"></p>
@@ -249,19 +264,19 @@
             <div class="dock-input-wrapper">
               <textarea 
                 id="candidateAnswerInput" 
-                class="answer-textarea" 
-                placeholder="Type your response or code architecture here... (or click the microphone to speak)"
+                class="answer-textarea hud-textarea" 
+                placeholder="Formulate your technical architecture, code structure, or reasoning here... (or speak via microphone)"
                 rows="3"
               ></textarea>
 
               <div class="dock-action-buttons">
-                <button class="mic-toggle-btn" id="micBtn" title="Speak Answer via Microphone" aria-label="Microphone">
+                <button class="mic-toggle-btn hud-mic-btn" id="micBtn" title="Speak Answer via Microphone">
                   <span class="mic-icon" id="micIcon">🎙️</span>
                   <span class="mic-label" id="micLabel">Speak</span>
                 </button>
 
-                <button class="send-answer-btn" id="submitAnswerBtn" title="Send Answer (Cmd+Enter)">
-                  <span>Send Answer</span>
+                <button class="send-answer-btn hud-send-btn" id="submitAnswerBtn" title="Send Answer (Cmd+Enter)">
+                  <span>Transmit</span>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -269,8 +284,11 @@
                 </button>
               </div>
             </div>
-            <div class="dock-footer-tip">
-              <span>Tip: Press <kbd>Cmd</kbd> + <kbd>Enter</kbd> to submit. Clear reasoning & system trade-offs boost your score.</span>
+
+            <!-- Dynamic Telemetry Word & Depth Counter -->
+            <div class="dock-footer-telemetry">
+              <span class="telemetry-depth-badge" id="telemetryDepthBadge">DEPTH: 0 WORDS</span>
+              <span class="telemetry-tip">Press <kbd>Cmd</kbd> + <kbd>Enter</kbd> to transmit. Detailed system trade-offs earn maximum marks.</span>
             </div>
           </div>
         </div>
@@ -282,75 +300,75 @@
       <div class="scorecard-container">
         
         <!-- Scorecard Header Banner -->
-        <div class="scorecard-header-card glass-card">
+        <div class="scorecard-header-card glass-card hud-corner-card">
           <div class="scorecard-header-left">
-            <div class="report-badge">🏆 Official Assessment Scorecard</div>
-            <h1 class="candidate-headline" id="scoreCandidateHeadline">Alex Mercer — Senior Full-Stack Track</h1>
-            <p class="score-subtitle" id="scoreExecutiveSummary">Evaluating performance across system architecture, algorithmic problem solving, clarity, and edge cases.</p>
+            <div class="report-badge">🏆 OFFICIAL J.A.R.V.I.S. EVALUATION DOSSIER</div>
+            <h1 class="candidate-headline" id="scoreCandidateHeadline">Aditya Sharma — Senior Track</h1>
+            <p class="score-subtitle" id="scoreExecutiveSummary">Rigorous multi-axis evaluation assessing architecture, algorithmic logic, edge-case mitigation, and clarity.</p>
           </div>
 
           <div class="scorecard-header-right">
             <!-- Overall Score Radial -->
             <div class="score-circle-wrapper">
               <div class="score-circle">
-                <span class="score-num" id="overallScoreNum">88</span>
-                <span class="score-den">/ 100</span>
+                <span class="score-num font-mono" id="overallScoreNum">0</span>
+                <span class="score-den font-mono">/ 100</span>
               </div>
-              <div class="verdict-badge verdict-hire" id="hiringVerdictBadge">STRONG HIRE</div>
+              <div class="verdict-badge verdict-nohire" id="hiringVerdictBadge">NO HIRE</div>
             </div>
           </div>
         </div>
 
         <!-- 4-Axis Pillar Skills Breakdown -->
         <div class="pillars-grid">
-          <div class="pillar-card glass-card">
+          <div class="pillar-card glass-card hud-corner-card">
             <div class="pillar-header">
               <span class="pillar-icon">⚡</span>
               <span class="pillar-title">Technical Competence</span>
-              <span class="pillar-score" id="pillarTechnical">90%</span>
+              <span class="pillar-score font-mono" id="pillarTechnical">0%</span>
             </div>
-            <div class="progress-track"><div class="progress-fill fill-cyan" id="fillTechnical" style="width: 90%;"></div></div>
+            <div class="progress-track"><div class="progress-fill fill-cyan" id="fillTechnical" style="width: 0%;"></div></div>
           </div>
 
-          <div class="pillar-card glass-card">
+          <div class="pillar-card glass-card hud-corner-card">
             <div class="pillar-header">
               <span class="pillar-icon">🧠</span>
               <span class="pillar-title">Problem Solving & Logic</span>
-              <span class="pillar-score" id="pillarProblemSolving">85%</span>
+              <span class="pillar-score font-mono" id="pillarProblemSolving">0%</span>
             </div>
-            <div class="progress-track"><div class="progress-fill fill-violet" id="fillProblemSolving" style="width: 85%;"></div></div>
+            <div class="progress-track"><div class="progress-fill fill-violet" id="fillProblemSolving" style="width: 0%;"></div></div>
           </div>
 
-          <div class="pillar-card glass-card">
+          <div class="pillar-card glass-card hud-corner-card">
             <div class="pillar-header">
               <span class="pillar-icon">💬</span>
-              <span class="pillar-title">Communication & Clarity</span>
-              <span class="pillar-score" id="pillarCommunication">92%</span>
+              <span class="pillar-title">Communication & Precision</span>
+              <span class="pillar-score font-mono" id="pillarCommunication">0%</span>
             </div>
-            <div class="progress-track"><div class="progress-fill fill-emerald" id="fillCommunication" style="width: 92%;"></div></div>
+            <div class="progress-track"><div class="progress-fill fill-emerald" id="fillCommunication" style="width: 0%;"></div></div>
           </div>
 
-          <div class="pillar-card glass-card">
+          <div class="pillar-card glass-card hud-corner-card">
             <div class="pillar-header">
               <span class="pillar-icon">🏗️</span>
-              <span class="pillar-title">Systematic Thinking</span>
-              <span class="pillar-score" id="pillarSystematic">84%</span>
+              <span class="pillar-title">Systematic Architecture</span>
+              <span class="pillar-score font-mono" id="pillarSystematic">0%</span>
             </div>
-            <div class="progress-track"><div class="progress-fill fill-amber" id="fillSystematic" style="width: 84%;"></div></div>
+            <div class="progress-track"><div class="progress-fill fill-amber" id="fillSystematic" style="width: 0%;"></div></div>
           </div>
         </div>
 
         <!-- Strengths & Growth Areas Grid -->
         <div class="feedback-columns-grid">
-          <div class="feedback-card glass-card strengths-card">
-            <h3 class="feedback-card-title"><span class="icon">✅</span> Key Strengths</h3>
+          <div class="feedback-card glass-card strengths-card hud-corner-card">
+            <h3 class="feedback-card-title"><span class="icon">✅</span> Validated Strengths</h3>
             <ul class="feedback-list" id="strengthsList">
               <!-- Dynamically rendered -->
             </ul>
           </div>
 
-          <div class="feedback-card glass-card growth-card">
-            <h3 class="feedback-card-title"><span class="icon">🎯</span> Areas for Improvement</h3>
+          <div class="feedback-card glass-card growth-card hud-corner-card">
+            <h3 class="feedback-card-title"><span class="icon">🎯</span> Critical Growth Areas</h3>
             <ul class="feedback-list" id="improvementsList">
               <!-- Dynamically rendered -->
             </ul>
@@ -358,10 +376,10 @@
         </div>
 
         <!-- Question by Question Breakdown Accordion -->
-        <div class="breakdown-section glass-card">
+        <div class="breakdown-section glass-card hud-corner-card">
           <div class="breakdown-header">
-            <h2 class="breakdown-title">📋 Question-by-Question Deep Dive</h2>
-            <p class="breakdown-subtitle">Review your transcript, feedback, and ideal suggested answers.</p>
+            <h2 class="breakdown-title">📋 Round-by-Round Architectural Analysis</h2>
+            <p class="breakdown-subtitle">Review exact scores, submitted answers, and ideal technical blueprints.</p>
           </div>
 
           <div class="questions-accordion" id="questionsAccordion">
@@ -371,14 +389,14 @@
 
         <!-- Bottom Action Dock -->
         <div class="scorecard-actions">
-          <button class="primary-launch-btn" id="retakeInterviewBtn">
-            🔄 Practice Another Interview
+          <button class="primary-launch-btn hud-launch-btn" id="retakeInterviewBtn">
+            🔄 Initialize New Assessment
           </button>
-          <button class="secondary-action-btn" id="exportReportBtn">
-            📥 Download Report (JSON)
+          <button class="secondary-action-btn hud-action-btn" id="exportReportBtn">
+            📥 Download Dossier (JSON)
           </button>
-          <button class="secondary-action-btn" id="printReportBtn">
-            🖨️ Print / Save as PDF
+          <button class="secondary-action-btn hud-action-btn" id="printReportBtn">
+            🖨️ Export PDF Dossier
           </button>
         </div>
 
@@ -387,10 +405,10 @@
 
   </main>
 
-  <!-- Notification Toast Popup -->
+  <!-- High-Tech Notification Toast Popup -->
   <div class="toast-notification hidden" id="toastNotification">
-    <span class="toast-icon" id="toastIcon">ℹ️</span>
-    <span class="toast-msg" id="toastMsg">Notification message</span>
+    <span class="toast-icon" id="toastIcon">⚡</span>
+    <span class="toast-msg" id="toastMsg">Telemetry updated</span>
   </div>
 
   <!-- Main JavaScript App Logic -->

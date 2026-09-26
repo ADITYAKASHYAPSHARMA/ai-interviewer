@@ -1,11 +1,11 @@
 """
-FastAPI Backend Server for AI Agent Interviewer.
+FastAPI Backend Server for J.A.R.V.I.S. AI Interviewer.
 Serves REST API and hosts the dynamic Single Page Web Application.
 """
 
 import os
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -16,13 +16,14 @@ from aiagent.agent import (
     agent_engine,
     AVAILABLE_ROLES,
     AVAILABLE_PERSONAS,
-    InterviewSession
+    InterviewSession,
+    InterviewMessage
 )
 
 app = FastAPI(
-    title="AI Agent Interviewer API",
-    description="Intelligent Conversational AI Interviewer with Real-Time Evaluation",
-    version="1.0.0"
+    title="J.A.R.V.I.S. AI Interviewer API",
+    description="Just A Rather Very Intelligent System — Autonomous Career Assessment & Technical Interview Engine",
+    version="2.0.0"
 )
 
 # Enable CORS for development flexibility
@@ -42,7 +43,7 @@ class StartInterviewRequest(BaseModel):
     candidate_name: str = Field(default="Candidate", description="Candidate's name")
     role: str = Field(default="Full-Stack Engineer", description="Target job role")
     level: str = Field(default="Senior", description="Seniority level")
-    persona: str = Field(default="FAANG Bar Raiser", description="Interviewer style/persona")
+    persona: str = Field(default="J.A.R.V.I.S. Protocol", description="Interviewer style/persona")
     total_questions: int = Field(default=5, ge=3, le=10, description="Total questions (3-10)")
 
 
@@ -57,6 +58,12 @@ class HintRequest(BaseModel):
 
 class FinishInterviewRequest(BaseModel):
     session_id: str
+    # Optional fallback payload for resilient serverless rehydration
+    candidate_name: Optional[str] = None
+    role: Optional[str] = None
+    level: Optional[str] = None
+    persona: Optional[str] = None
+    history: Optional[List[Dict[str, Any]]] = None
 
 
 # REST API Endpoints
@@ -64,6 +71,8 @@ class FinishInterviewRequest(BaseModel):
 async def health_check():
     return {
         "status": "online",
+        "system": "J.A.R.V.I.S. Autonomous Intelligence",
+        "version": "3.8-Calibrated",
         "active_provider": agent_engine.active_provider,
         "total_active_sessions": len(agent_engine.sessions)
     }
@@ -127,7 +136,8 @@ async def respond_interview(req: RespondInterviewRequest):
             "total_questions": result["total_questions"],
             "interviewer_message": result["message"],
             "is_completed": result["is_completed"],
-            "status": result["status"]
+            "status": result["status"],
+            "quality_diagnostic": result.get("quality_diagnostic")
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -149,11 +159,33 @@ async def get_hint(req: HintRequest):
 @app.post("/api/interview/finish")
 async def finish_interview(req: FinishInterviewRequest):
     session = agent_engine.get_session(req.session_id)
+
+    # Resilient rehydration if session was lost across serverless lambdas
+    if not session and req.history:
+        session = agent_engine.create_session(
+            candidate_name=req.candidate_name or "Candidate",
+            role=req.role or "Full-Stack Engineer",
+            level=req.level or "Senior",
+            persona=req.persona or "J.A.R.V.I.S. Protocol",
+            total_questions=max(3, len(req.history) // 2)
+        )
+        session.id = req.session_id
+        session.history = [
+            InterviewMessage(
+                role=item.get("role", "candidate"),
+                content=item.get("content", ""),
+                question_index=item.get("question_index", 1),
+                metadata=item.get("metadata", {})
+            )
+            for item in req.history
+        ]
+        agent_engine.sessions[session.id] = session
+
     if not session:
         raise HTTPException(status_code=404, detail="Interview session not found")
 
     try:
-        evaluation = agent_engine.evaluate_interview(req.session_id)
+        evaluation = agent_engine.evaluate_interview(session.id)
         return {
             "success": True,
             "session_id": session.id,
@@ -205,6 +237,6 @@ async def serve_index():
     if index_file.exists():
         return FileResponse(index_file)
     return JSONResponse(
-        content={"message": "AI Agent Interviewer API is running. UI building in progress."},
+        content={"message": "J.A.R.V.I.S. AI Interviewer API is running."},
         status_code=200
     )
