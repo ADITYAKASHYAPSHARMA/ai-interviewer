@@ -1,6 +1,6 @@
 /**
- * J.A.R.V.I.S. Autonomous Interviewer — Frontend Application Controller
- * Handles UI state, Web Audio API visualizer & SFX synthesizer, Web Speech API (STT/TTS), and calibrated REST API integration.
+ * JARVIS Technical Assessment Platform — Frontend Application Controller
+ * Handles UI state, Apple-style voice visualizer, Web Speech API (STT/TTS), and calibrated REST API integration.
  */
 
 // Application State
@@ -15,12 +15,11 @@ const state = {
   currentQuestion: 1,
   isRecording: false,
   isVoiceEnabled: true,
-  isSfxEnabled: true,
   timerInterval: null,
   timerSeconds: 0,
   rolesList: [],
   personasList: [],
-  transcript: [], // Local transcript resilience buffer
+  transcript: [], // Local transcript buffer for serverless resilience
   speechSynthesis: window.speechSynthesis || null,
   recognition: null,
   audioContext: null,
@@ -36,9 +35,6 @@ const elements = {
   brandHomeBtn: document.getElementById('brandHomeBtn'),
   providerStatusChip: document.getElementById('providerStatusChip'),
   providerStatusText: document.getElementById('providerStatusText'),
-  sfxToggleBtn: document.getElementById('sfxToggleBtn'),
-  sfxIcon: document.getElementById('sfxIcon'),
-  sfxStateLabel: document.getElementById('sfxStateLabel'),
   voiceToggleBtn: document.getElementById('voiceToggleBtn'),
   voiceIcon: document.getElementById('voiceIcon'),
   voiceStateLabel: document.getElementById('voiceStateLabel'),
@@ -59,12 +55,14 @@ const elements = {
 
   // Interview Stage
   avatarPulse: document.getElementById('avatarPulse'),
+  voiceOrbSphere: document.getElementById('voiceOrbSphere'),
   voiceWavePill: document.getElementById('voiceWavePill'),
   stagePersonaName: document.getElementById('stagePersonaName'),
   stageRoleLabel: document.getElementById('stageRoleLabel'),
   interviewerStateText: document.getElementById('interviewerStateText'),
   interviewTimer: document.getElementById('interviewTimer'),
   questionProgressText: document.getElementById('questionProgressText'),
+  roundProgressFill: document.getElementById('roundProgressFill'),
   stepProgressDots: document.getElementById('stepProgressDots'),
   getHintBtn: document.getElementById('getHintBtn'),
   finishEarlyBtn: document.getElementById('finishEarlyBtn'),
@@ -108,78 +106,8 @@ const elements = {
 
   // Toast
   toastNotification: document.getElementById('toastNotification'),
-  toastMsg: document.getElementById('toastMsg'),
-  toastIcon: document.getElementById('toastIcon')
+  toastMsg: document.getElementById('toastMsg')
 };
-
-// ==========================================================================
-// HIGH-TECH AUDIO SFX SYNTHESIZER (WEB AUDIO API)
-// ==========================================================================
-function playJarvisSound(type) {
-  if (!state.isSfxEnabled) return;
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const now = ctx.currentTime;
-
-    if (type === 'init') {
-      // High-tech power-up sweep
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.35);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.35);
-    } else if (type === 'send') {
-      // Crisp digital blip
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(600, now);
-      osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
-      gain.gain.setValueAtTime(0.07, now);
-      gain.gain.linearRampToValueAtTime(0.001, now + 0.08);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.08);
-    } else if (type === 'receive') {
-      // Two-tone cyber chime
-      [0, 0.09].forEach((delay, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(idx === 0 ? 523.25 : 783.99, now + delay);
-        gain.gain.setValueAtTime(0.06, now + delay);
-        gain.gain.linearRampToValueAtTime(0.001, now + delay + 0.12);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + delay);
-        osc.stop(now + delay + 0.12);
-      });
-    } else if (type === 'click') {
-      // Micro click
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1400, now);
-      gain.gain.setValueAtTime(0.03, now);
-      gain.gain.linearRampToValueAtTime(0.001, now + 0.03);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.03);
-    }
-  } catch (e) {
-    // Audio context may be restricted by autoplay policy
-  }
-}
 
 // ==========================================================================
 // INITIALIZATION
@@ -194,13 +122,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadMetadataAndHealth() {
   try {
     const [healthRes, rolesRes, personasRes] = await Promise.all([
-      fetch('/api/health').then(r => r.json()).catch(() => ({ active_provider: 'J.A.R.V.I.S. Calibrated Engine' })),
+      fetch('/api/health').then(r => r.json()).catch(() => ({ active_provider: 'JARVIS Engine' })),
       fetch('/api/roles').then(r => r.json()).catch(() => ({ roles: [] })),
       fetch('/api/personas').then(r => r.json()).catch(() => ({ personas: [] }))
     ]);
 
     if (healthRes.active_provider) {
-      elements.providerStatusText.textContent = `SYSTEM ONLINE // ${healthRes.active_provider.toUpperCase()}`;
+      elements.providerStatusText.textContent = `Online (${healthRes.active_provider.split(' ')[0]})`;
     }
 
     state.rolesList = rolesRes.roles || [];
@@ -209,8 +137,8 @@ async function loadMetadataAndHealth() {
     renderRoles();
     renderPersonas();
   } catch (err) {
-    console.error('Error initializing telemetry:', err);
-    elements.providerStatusText.textContent = 'J.A.R.V.I.S. CALIBRATED ENGINE ONLINE';
+    console.error('Error initializing metadata:', err);
+    elements.providerStatusText.textContent = 'JARVIS Engine Online';
   }
 }
 
@@ -224,14 +152,13 @@ function renderRoles() {
     tile.className = `role-tile ${role.id === state.selectedRole ? 'selected' : ''}`;
     tile.dataset.roleId = role.id;
     tile.innerHTML = `
-      <div class="role-icon">${role.icon || '⚡'}</div>
+      <div class="role-icon">${role.icon || '💼'}</div>
       <div class="role-meta">
         <div class="role-meta-title">${escapeHtml(role.title)}</div>
         <div class="role-meta-desc">${escapeHtml(role.description)}</div>
       </div>
     `;
     tile.addEventListener('click', () => {
-      playJarvisSound('click');
       document.querySelectorAll('.role-tile').forEach(t => t.classList.remove('selected'));
       tile.classList.add('selected');
       state.selectedRole = role.id;
@@ -251,7 +178,6 @@ function renderPersonas() {
       <div class="persona-tagline">${escapeHtml(persona.tagline)}</div>
     `;
     tile.addEventListener('click', () => {
-      playJarvisSound('click');
       document.querySelectorAll('.persona-tile').forEach(t => t.classList.remove('selected'));
       tile.classList.add('selected');
       state.selectedPersona = persona.id;
@@ -266,33 +192,22 @@ function renderPersonas() {
 function bindEvents() {
   // Brand Logo home click
   elements.brandHomeBtn.addEventListener('click', () => {
-    playJarvisSound('click');
     if (state.currentView !== 'setupView') {
       switchView('setupView');
       elements.headerEndBtn.classList.add('hidden');
     }
   });
 
-  // SFX Toggle
-  elements.sfxToggleBtn.addEventListener('click', () => {
-    state.isSfxEnabled = !state.isSfxEnabled;
-    elements.sfxStateLabel.textContent = state.isSfxEnabled ? 'ON' : 'OFF';
-    elements.sfxIcon.textContent = state.isSfxEnabled ? '🔊' : '🔇';
-    playJarvisSound('click');
-    showToast(`High-tech audio SFX ${state.isSfxEnabled ? 'enabled' : 'disabled'}`);
-  });
-
   // Voice Toggle
   elements.voiceToggleBtn.addEventListener('click', () => {
     state.isVoiceEnabled = !state.isVoiceEnabled;
     elements.voiceStateLabel.textContent = state.isVoiceEnabled ? 'ON' : 'OFF';
-    elements.voiceIcon.textContent = state.isVoiceEnabled ? '🎙️' : '🔇';
-    playJarvisSound('click');
+    elements.voiceIcon.textContent = state.isVoiceEnabled ? '🔊' : '🔇';
     if (!state.isVoiceEnabled && state.speechSynthesis) {
       state.speechSynthesis.cancel();
       stopAvatarSpeakingAnimation();
     }
-    showToast(`Voice synthesis ${state.isVoiceEnabled ? 'enabled' : 'disabled'}`);
+    showToast(`Voice reading ${state.isVoiceEnabled ? 'enabled' : 'disabled'}`);
   });
 
   // Start Interview
@@ -330,7 +245,6 @@ function bindEvents() {
 
   // Scorecard Actions
   elements.retakeInterviewBtn.addEventListener('click', () => {
-    playJarvisSound('click');
     switchView('setupView');
     elements.headerEndBtn.classList.add('hidden');
   });
@@ -344,17 +258,17 @@ function updateInputDepthTelemetry() {
   const words = text ? text.split(/\s+/).length : 0;
   const badge = elements.telemetryDepthBadge;
 
-  badge.className = 'telemetry-depth-badge';
+  badge.className = 'depth-indicator';
   if (words === 0) {
-    badge.textContent = 'DEPTH: 0 WORDS';
+    badge.innerHTML = `<span class="depth-dot"></span><span>0 words</span>`;
   } else if (words < 15) {
     badge.classList.add('warning');
-    badge.textContent = `DEPTH: ${words} WORDS // INSUFFICIENT ARCHITECTURE (PENALTY RISK)`;
+    badge.innerHTML = `<span class="depth-dot"></span><span>${words} words • Minimal depth</span>`;
   } else if (words < 45) {
-    badge.textContent = `DEPTH: ${words} WORDS // MODERATE DEPTH`;
+    badge.innerHTML = `<span class="depth-dot"></span><span>${words} words • Moderate depth</span>`;
   } else {
     badge.classList.add('good');
-    badge.textContent = `DEPTH: ${words} WORDS // COMPREHENSIVE ARCHITECTURAL SUBSTANCE`;
+    badge.innerHTML = `<span class="depth-dot"></span><span>${words} words • Comprehensive depth</span>`;
   }
 }
 
@@ -381,14 +295,13 @@ function switchView(viewId) {
 // INTERVIEW FLOW LOGIC
 // ==========================================================================
 async function startInterview() {
-  playJarvisSound('init');
   const name = elements.candidateNameInput.value.trim() || 'Candidate';
   state.candidateName = name;
   state.seniority = elements.senioritySelect.value;
   state.totalQuestions = parseInt(elements.questionCountSelect.value, 10);
 
-  const selectedRoleObj = state.rolesList.find(r => r.id === state.selectedRole) || { title: 'Full-Stack Engineer' };
-  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'J.A.R.V.I.S. Protocol' };
+  const selectedRoleObj = state.rolesList.find(r => r.id === state.selectedRole) || { title: 'Backend Systems Engineer' };
+  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'JARVIS Executive Assessor' };
 
   // Set Stage Headers
   elements.stagePersonaName.textContent = selectedPersonaObj.name;
@@ -402,9 +315,10 @@ async function startInterview() {
   switchView('interviewView');
   elements.messagesList.innerHTML = '';
   elements.interviewerTypingIndicator.classList.remove('hidden');
-  setInterviewerState('CALIBRATING DIAGNOSTICS...', true);
+  setInterviewerState('Formulating question...', true);
 
-  // Initialize Progress Dots
+  // Initialize Progress
+  updateProgressText(1, state.totalQuestions);
   renderProgressDots(1, state.totalQuestions);
   startTimer();
 
@@ -437,28 +351,24 @@ async function startInterview() {
         question_index: 1
       });
 
-      playJarvisSound('receive');
       speakText(data.interviewer_message);
-      setInterviewerState('SYSTEM LISTENING', false);
+      setInterviewerState('Listening to candidate', false);
     } else {
-      showToast('Error initializing assessment protocol', 'error');
+      showToast('Error initializing interview', 'error');
     }
   } catch (err) {
     elements.interviewerTypingIndicator.classList.add('hidden');
     console.error('Failed to start interview:', err);
-    showToast('Failed to establish backend neural link', 'error');
+    showToast('Failed to connect to assessment engine', 'error');
   }
 }
 
 async function submitCandidateAnswer() {
   const answer = elements.candidateAnswerInput.value.trim();
   if (!answer) {
-    playJarvisSound('click');
-    showToast('Formulate your technical answer or transmit audio first', 'warning');
+    showToast('Please type or speak your response first', 'warning');
     return;
   }
-
-  playJarvisSound('send');
 
   // Stop recording if active
   if (state.isRecording) {
@@ -479,7 +389,7 @@ async function submitCandidateAnswer() {
 
   // Show typing indicator
   elements.interviewerTypingIndicator.classList.remove('hidden');
-  setInterviewerState('CALIBRATING ACCURACY & DEPTH...', true);
+  setInterviewerState('Analyzing response & architecture...', true);
   scrollConversationToBottom();
 
   try {
@@ -507,30 +417,28 @@ async function submitCandidateAnswer() {
         question_index: data.current_question
       });
 
-      playJarvisSound('receive');
       speakText(data.interviewer_message);
 
       if (data.is_completed) {
-        setInterviewerState('ASSESSMENT CONCLUDED', false);
+        setInterviewerState('Assessment Concluded', false);
         setTimeout(() => finishInterviewAndEvaluate(), 3500);
       } else {
-        setInterviewerState('SYSTEM LISTENING', false);
+        setInterviewerState('Listening to candidate', false);
       }
     } else {
-      showToast('Error transmitting response', 'error');
+      showToast('Error submitting response', 'error');
     }
   } catch (err) {
     elements.interviewerTypingIndicator.classList.add('hidden');
     console.error('Error in respond:', err);
-    showToast('Failed to transmit response', 'error');
+    showToast('Failed to submit response', 'error');
   }
 }
 
 async function requestHint() {
   if (!state.sessionId) return;
-  playJarvisSound('click');
   elements.getHintBtn.disabled = true;
-  elements.getHintBtn.textContent = 'Analyzing Context...';
+  elements.getHintBtn.textContent = 'Generating guidance...';
 
   try {
     const res = await fetch('/api/interview/hint', {
@@ -542,28 +450,26 @@ async function requestHint() {
     if (data.success && data.hint) {
       elements.hintContentText.textContent = data.hint;
       elements.hintAlertBox.classList.remove('hidden');
-      playJarvisSound('receive');
-      showToast('Tactical hint generated', 'info');
+      showToast('Guidance provided');
     }
   } catch (err) {
     console.error('Error getting hint:', err);
   } finally {
     elements.getHintBtn.disabled = false;
-    elements.getHintBtn.textContent = '💡 Request Tactical Hint';
+    elements.getHintBtn.textContent = '💡 Request Guidance';
   }
 }
 
 async function finishInterviewAndEvaluate() {
   if (!state.sessionId) return;
-  playJarvisSound('click');
   stopTimer();
   if (state.speechSynthesis) state.speechSynthesis.cancel();
   stopAvatarSpeakingAnimation();
 
-  showToast('Synthesizing Calibrated Evaluation Dossier...', 'info');
+  showToast('Generating official evaluation scorecard...');
 
   const selectedRoleObj = state.rolesList.find(r => r.id === state.selectedRole) || { title: 'Engineer' };
-  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'J.A.R.V.I.S. Protocol' };
+  const selectedPersonaObj = state.personasList.find(p => p.id === state.selectedPersona) || { name: 'JARVIS Executive Assessor' };
 
   try {
     const res = await fetch('/api/interview/finish', {
@@ -584,9 +490,8 @@ async function finishInterviewAndEvaluate() {
       state.lastEvaluation = data.evaluation;
       renderScorecard(data);
       switchView('scorecardView');
-      playJarvisSound('init');
     } else {
-      showToast('Failed to finalize evaluation dossier', 'error');
+      showToast('Failed to finalize scorecard', 'error');
     }
   } catch (err) {
     console.error('Error finishing interview:', err);
@@ -595,21 +500,21 @@ async function finishInterviewAndEvaluate() {
 }
 
 // ==========================================================================
-// SCORECARD RENDERING (STRICT CALIBRATION — ZERO FALSY DEFAULT BUGS)
+// SCORECARD RENDERING (STRICT NUMERICAL CALIBRATION — ZERO FALSY DEFAULT BUGS)
 // ==========================================================================
 function renderScorecard(data) {
   const evalData = data.evaluation;
   elements.scoreCandidateHeadline.textContent = `${data.candidate_name || state.candidateName} — ${data.role}`;
-  elements.scoreExecutiveSummary.textContent = evalData.summary || 'Assessment evaluation compiled.';
+  elements.scoreExecutiveSummary.textContent = evalData.summary || 'Technical evaluation compiled across core pillars.';
 
-  // Overall Score — STRICT: Never default 0 to 80!
+  // Overall Score — Strict numeric (never default 0 to 80!)
   const score = evalData.overall_score !== undefined ? evalData.overall_score : 0;
   elements.overallScoreNum.textContent = score;
 
   // Verdict — Calibrated strictly
   const rawVerdict = evalData.verdict || (score >= 80 ? 'Hire' : (score >= 65 ? 'Leaning Hire' : 'No Hire'));
   elements.hiringVerdictBadge.textContent = rawVerdict.toUpperCase();
-  elements.hiringVerdictBadge.className = 'verdict-badge';
+  elements.hiringVerdictBadge.className = 'verdict-pill';
 
   const vLower = rawVerdict.toLowerCase();
   if (vLower.includes('strong hire')) {
@@ -622,7 +527,7 @@ function renderScorecard(data) {
     elements.hiringVerdictBadge.classList.add('verdict-nohire');
   }
 
-  // 4 Pillar Skills — STRICT: Never default 0 to 80!
+  // 4 Pillar Skills — Strict numeric (never default 0 to 80!)
   const metrics = evalData.metrics || {};
   setMetricBar(elements.pillarTechnical, elements.fillTechnical, metrics.technical_competence !== undefined ? metrics.technical_competence : 0);
   setMetricBar(elements.pillarProblemSolving, elements.fillProblemSolving, metrics.problem_solving !== undefined ? metrics.problem_solving : 0);
@@ -669,7 +574,7 @@ function renderScorecard(data) {
           <div class="qa-text">${escapeHtml(q.candidate_answer_summary || 'No answer recorded.')}</div>
         </div>
         <div class="qa-box">
-          <div class="qa-label feedback">J.A.R.V.I.S. Critique & Scoring Rationale</div>
+          <div class="qa-label feedback">Evaluator Critique & Scoring Analysis</div>
           <div class="qa-text">${escapeHtml(q.feedback || 'Zero technical substance demonstrated.')}</div>
         </div>
         <div class="qa-box">
@@ -680,7 +585,6 @@ function renderScorecard(data) {
     `;
 
     item.querySelector('.accordion-summary').addEventListener('click', () => {
-      playJarvisSound('click');
       const body = item.querySelector('.accordion-body');
       body.classList.toggle('hidden');
     });
@@ -697,17 +601,17 @@ function setMetricBar(labelEl, fillEl, val) {
 
 function exportReportJSON() {
   if (!state.lastEvaluation) {
-    showToast('No dossier data to export', 'warning');
+    showToast('No report data to export');
     return;
   }
   const blob = new Blob([JSON.stringify(state.lastEvaluation, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `jarvis-assessment-dossier-${state.sessionId || 'report'}.json`;
+  a.download = `jarvis-assessment-report-${state.sessionId || 'scorecard'}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('Evaluation dossier downloaded', 'info');
+  showToast('Evaluation report downloaded');
 }
 
 // ==========================================================================
@@ -750,7 +654,6 @@ function setupSpeechRecognition() {
 
 async function toggleMicrophone() {
   state.isRecording = !state.isRecording;
-  playJarvisSound('click');
 
   if (state.isRecording) {
     elements.micBtn.classList.add('recording');
@@ -811,7 +714,7 @@ function drawWaveform() {
 
     for (let i = 0; i < bufferLength; i++) {
       const barHeight = (dataArray[i] / 255) * canvas.height;
-      ctx.fillStyle = '#00f5ff';
+      ctx.fillStyle = '#6366f1';
       ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
       x += barWidth;
     }
@@ -828,11 +731,11 @@ function drawMockWaveform() {
     if (!state.isRecording) return;
     state.visualizerAnimId = requestAnimationFrame(draw);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#00f5ff';
+    ctx.fillStyle = '#6366f1';
 
     for (let i = 0; i < 20; i++) {
-      const h = Math.abs(Math.sin(step + i * 0.4)) * 26 + 4;
-      ctx.fillRect(i * 20, (canvas.height - h) / 2, 12, h);
+      const h = Math.abs(Math.sin(step + i * 0.4)) * 22 + 4;
+      ctx.fillRect(i * 20, (canvas.height - h) / 2, 10, h);
     }
     step += 0.15;
   };
@@ -882,12 +785,12 @@ function stopAvatarSpeakingAnimation() {
 function appendMessage(role, content, qIndex) {
   const bubble = document.createElement('div');
   bubble.className = `chat-bubble ${role}`;
-  const senderLabel = role === 'interviewer' ? `J.A.R.V.I.S. // ROUND ${qIndex}` : `${state.candidateName}`;
+  const senderLabel = role === 'interviewer' ? `JARVIS • Round ${qIndex}` : `${state.candidateName}`;
 
   bubble.innerHTML = `
     <div class="bubble-sender">
       <span>${senderLabel}</span>
-      <span style="opacity: 0.65; font-size: 0.72rem; font-family: var(--font-mono);">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      <span style="opacity: 0.6; font-size: 0.72rem; font-family: var(--font-mono);">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
     </div>
     <div class="bubble-content">${formatMarkdown(content)}</div>
   `;
@@ -924,21 +827,25 @@ function scrollConversationToBottom() {
 
 function setInterviewerState(text, isBusy) {
   elements.interviewerStateText.textContent = text;
-  elements.interviewerStateText.style.color = isBusy ? 'var(--accent-cyan)' : 'var(--text-secondary)';
+  elements.interviewerStateText.style.color = isBusy ? 'var(--accent-indigo)' : 'var(--text-secondary)';
 }
 
 function updateProgressText(current, total) {
   elements.questionProgressText.textContent = `${current} of ${total}`;
+  if (elements.roundProgressFill) {
+    const pct = Math.max(5, Math.min(100, Math.round((current / total) * 100)));
+    elements.roundProgressFill.style.width = `${pct}%`;
+  }
 }
 
 function renderProgressDots(current, total) {
   elements.stepProgressDots.innerHTML = '';
   for (let i = 1; i <= total; i++) {
     const dot = document.createElement('div');
-    dot.className = 'step-dot font-mono';
+    dot.className = 'round-pill';
     if (i === current) dot.classList.add('active');
     else if (i < current) dot.classList.add('done');
-    dot.textContent = `R${i}`;
+    dot.textContent = `Round ${i}`;
     elements.stepProgressDots.appendChild(dot);
   }
 }
@@ -958,13 +865,11 @@ function stopTimer() {
   clearInterval(state.timerInterval);
 }
 
-function showToast(message, type = 'info') {
-  const icons = { info: '⚡', warning: '⚠️', error: '❌', success: '✅' };
-  elements.toastIcon.textContent = icons[type] || '⚡';
+function showToast(message) {
   elements.toastMsg.textContent = message;
   elements.toastNotification.classList.remove('hidden');
 
   setTimeout(() => {
     elements.toastNotification.classList.add('hidden');
-  }, 3500);
+  }, 3200);
 }

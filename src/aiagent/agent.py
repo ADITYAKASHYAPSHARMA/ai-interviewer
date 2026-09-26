@@ -107,31 +107,31 @@ AVAILABLE_ROLES = [
     }
 ]
 
-# High-Tech J.A.R.V.I.S. Persona Protocols
+# Professional Executive Assessment Personas
 AVAILABLE_PERSONAS = [
     {
         "id": "jarvis",
-        "name": "J.A.R.V.I.S. Protocol",
-        "tagline": "Autonomous AI Assessor — Uncompromising technical rigor, sharp analysis, precise calibration.",
-        "tone": "Ultra-intelligent, polite yet exacting, deeply analytical, verifies technical accuracy and system trade-offs."
+        "name": "JARVIS Executive Assessor",
+        "tagline": "Objective, analytical, and calibrated evaluation of architectural depth and problem solving.",
+        "tone": "Articulate, composed, highly analytical, evaluating technical rigor, architectural trade-offs, and scalability."
     },
     {
         "id": "faang",
-        "name": "FAANG Bar Raiser",
-        "tagline": "Rigorous, deep-dives into edge cases, scalability, and optimal complexity.",
-        "tone": "Formal, highly analytical, sharp, challenges assumptions, focuses on scale, latency, and failure modes."
+        "name": "Bar Raiser Interviewer",
+        "tagline": "Rigorous evaluation challenging edge cases, latency constraints, and systems scale.",
+        "tone": "Formal, highly analytical, probing edge cases, scalability limits, and optimal complexity."
     },
     {
         "id": "tech_lead",
-        "name": "Staff Architect Protocol",
-        "tagline": "Balanced between code craftsmanship, architecture, and team collaboration.",
-        "tone": "Collaborative, practical, values clean architecture, boundary isolation, maintainability, and clear communication."
+        "name": "Principal Systems Architect",
+        "tagline": "Focuses on engineering craftsmanship, clean system boundaries, and maintainability.",
+        "tone": "Collaborative yet rigorous, values maintainability, failure domain isolation, and pragmatic trade-offs."
     },
     {
         "id": "startup_cto",
-        "name": "Startup CTO Protocol",
-        "tagline": "Pragmatic, fast-paced, values speed of execution, trade-offs, and practical design.",
-        "tone": "Pragmatic, fast-paced, direct, probing real-world production incidents, shipping velocity, and fault recovery."
+        "name": "Engineering Director / CTO",
+        "tagline": "Pragmatic, fast-paced assessment of real-world production incident response and delivery velocity.",
+        "tone": "Pragmatic, direct, assessing real-world production incidents, shipping velocity, and fault recovery."
     }
 ]
 
@@ -334,20 +334,19 @@ class InterviewAgent:
             raise ValueError(f"Session {session_id} not found")
 
         llm = self._get_llm(temperature=0.6)
-        prompt = f"""You are J.A.R.V.I.S. (Just A Rather Very Intelligent System), the premier autonomous AI Technical Assessor.
-Target Candidate: {session.candidate_name}
+        prompt = f"""You are JARVIS, an executive AI Technical Assessor conducting a senior technical assessment.
+Candidate: {session.candidate_name}
 Target Role: {session.level} {session.role}
-Active Persona Protocol: {session.persona}
-Assessment Rounds: {session.total_questions} questions total
+Assessment Style: {session.persona}
+Assessment Scope: {session.total_questions} rounds total
 
 Instructions:
-1. Greet {session.candidate_name} with the voice and composure of J.A.R.V.I.S. (polite, intelligent, sharp, and confident).
-2. Announce the initiation of today's technical evaluation for the {session.level} {session.role} position.
-3. State that technical precision, architectural depth, trade-off clarity, and scalability will be evaluated with strict accuracy.
-4. Present Question 1 (out of {session.total_questions}). The question must be deeply relevant, thought-provoking, and calibrated for a {session.level} practitioner.
-5. Ask strictly ONE clear question. No bulleted multi-part questionnaires.
+1. Greet {session.candidate_name} in an articulate, professional, and composed manner.
+2. Introduce yourself as JARVIS and briefly summarize today's assessment: a structured, rigorous evaluation of system architecture, engineering trade-offs, and problem solving for the {session.level} {session.role} position.
+3. Present Question 1 (out of {session.total_questions}). The question must be deeply relevant, thought-provoking, and calibrated for a {session.level} engineering professional.
+4. Ask strictly ONE clear question. Avoid lengthy preamble.
 
-Speak directly to the candidate."""
+Speak directly to the candidate as a senior peer."""
 
         if llm:
             try:
@@ -631,36 +630,36 @@ You MUST return strictly valid, parseable JSON with NO markdown ticks or preambl
     # Fallback response generators
     def _fallback_start_message(self, session: InterviewSession) -> str:
         return (
-            f"Greetings {session.candidate_name}. I am J.A.R.V.I.S., your autonomous technical assessor for today's "
-            f"{session.level} {session.role} evaluation. We will conduct {session.total_questions} rigorous rounds covering "
-            f"systems architecture, algorithmic problem solving, and production trade-offs.\n\n"
-            f"**Question 1:** To begin our diagnostics, walk me through an end-to-end architecture or complex system you recently engineered. "
-            f"What were the core bottlenecks, and what trade-offs governed your technology choices?"
+            f"Hello {session.candidate_name}. Welcome to your technical assessment for the {session.level} {session.role} position. "
+            f"I am JARVIS, your evaluator today. Over the course of {session.total_questions} rounds, we will examine system architecture, "
+            f"trade-offs, and practical engineering judgment.\n\n"
+            f"**Question 1:** To begin, could you walk me through an end-to-end architecture or complex system you recently engineered? "
+            f"What primary constraints and trade-offs guided your technology decisions?"
         )
 
     def _fallback_response_message(self, session: InterviewSession, is_last: bool, next_q: int, quality_diag: Dict[str, Any]) -> str:
         if is_last:
             if not quality_diag.get("is_substantive", True):
                 return (
-                    f"Understood, {session.candidate_name}. I noted that your final submission lacked technical substance. "
-                    f"That concludes our interview questions for today. I am now compiling your complete evaluation dossier."
+                    f"Thank you, {session.candidate_name}. I noted that your final response lacked technical substance. "
+                    f"That concludes our assessment rounds for today. I am now compiling your comprehensive evaluation report."
                 )
             return (
-                f"Thank you, {session.candidate_name}. Your response has been logged. "
-                f"That concludes our technical rounds. J.A.R.V.I.S. is now synthesizing your comprehensive evaluation dossier."
+                f"Thank you, {session.candidate_name}. Your response has been recorded. "
+                f"That concludes our technical assessment. I am now synthesizing your official evaluation report."
             )
 
         # Contextual prefix based on quality
         if not quality_diag.get("is_substantive", True):
-            prefix = "I noted that response lacked engineering depth or relevance to the question. Let us proceed to the next diagnostic."
+            prefix = "I noted that response lacked engineering depth or direct relevance. Let us proceed to the next area."
         else:
-            prefix = "Acknowledged. Let us advance to the next technical dimension."
+            prefix = "Thank you. Let us move to the next dimension."
 
         questions_pool = [
-            f"{prefix} For **Question {next_q}**: How do you architect a distributed system to handle a 10x traffic surge while preserving sub-100ms P99 latency and preventing cascading failures?",
-            f"{prefix} Moving to **Question {next_q}**: Describe a critical production outage you investigated. How did you identify root cause, isolate the blast radius, and automate prevention?",
+            f"{prefix} For **Question {next_q}**: How do you architect a distributed backend to handle a 10x traffic surge while preserving sub-100ms P99 latency and preventing cascading failure?",
+            f"{prefix} Moving to **Question {next_q}**: Describe a critical production incident or outage you investigated. How did you diagnose root cause, isolate the blast radius, and automate prevention?",
             f"{prefix} Now, **Question {next_q}**: When designing a caching tier under heavy write load, how do you handle cache stampedes, stale reads, and consistency trade-offs?",
-            f"{prefix} For **Question {next_q}**: How do you enforce architectural boundaries, zero-downtime deployments, and maintainability across a multi-service engineering organization?"
+            f"{prefix} For **Question {next_q}**: How do you enforce architectural boundaries, zero-downtime deployments, and maintainability across a distributed service architecture?"
         ]
         q_idx = (next_q - 2) % len(questions_pool)
         return questions_pool[q_idx]

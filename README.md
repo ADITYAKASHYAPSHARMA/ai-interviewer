@@ -1,42 +1,41 @@
-# ⚡ J.A.R.V.I.S. — Autonomous Career Intelligence & Assessment Engine
+# ⚡ JARVIS — Enterprise Technical Assessment & Architecture Evaluation Platform
 
-**J.A.R.V.I.S.** (*Just A Rather Very Intelligent System*) is a full-stack, autonomous **AI Technical Assessor and Career Coach** built with **LangChain**, **FastAPI**, and modern **Web Speech & Audio APIs**. Designed with a high-tech Stark Industries HUD aesthetic, J.A.R.V.I.S. conducts realistic, adaptive technical interviews with real-time speech synthesis, live microphone transcription, dynamic architectural probing, and strictly calibrated Bar-Raiser evaluation scorecards.
+**JARVIS** is an executive-tier, full-stack **AI Technical Assessor and Architecture Evaluation Platform** built with **LangChain**, **FastAPI**, and modern **Web Speech & Web Audio APIs**. Designed with a sophisticated dark-mode aesthetic inspired by Linear and Apple Intelligence, JARVIS conducts rigorous, adaptive technical interviews with real-time speech interaction, dynamic architectural probing, and strictly calibrated Bar-Raiser evaluation scorecards.
 
 ---
 
-## 🌟 Key Features
+## 🌟 Key Capabilities
 
 - **🎯 Calibrated Accuracy & Anti-Hallucination Grading Engine**:
-  - **Evidence-Based Scoring**: Evaluates only the technical substance actually demonstrated.
-  - **Zero Tolerance for Fluff**: Evasive answers, random text, or gibberish ("idk", "asdf", buzzword stuffing) are penalized with 0–15/100 and an immediate "No Hire" verdict.
-  - **Calibrated Heuristic Fallback**: Deterministic analysis ensures fair and rigorous scoring even if offline or during network timeouts—preventing arbitrary high scores.
-- **🎙️ Real-Time Voice Cognition & Audio HUD**:
-  - **Holographic Arc Reactor HUD**: Animated multi-ring Arc Reactor avatar with concentric rotating rings and real-time frequency-reactive wave displays.
-  - **Speech-to-Text (STT)**: Voice transcription streaming directly into the candidate answer dock.
-  - **Text-to-Speech (TTS)**: Crisp J.A.R.V.I.S. voice synthesis reciting questions aloud.
-  - **Web Audio SFX Synthesizer**: High-tech cyber telemetry chimes, activation sweeps, and digital feedback.
+  - **Evidence-Based Scoring**: Evaluates strictly against demonstrable engineering depth, trade-off clarity, and scalability mechanics.
+  - **Zero Tolerance for Fluff**: Evasive answers, random text, or gibberish ("idk", "pass", buzzword stuffing) are penalized with 0–15/100 and an immediate "No Hire" verdict.
+  - **Deterministic Heuristic Fallback**: Ensures fair and rigorous scoring even if offline or during network timeouts, completely preventing arbitrary high scores.
+- **🎙️ Real-Time Voice Interaction & Acoustic Luminescence Orb**:
+  - **Harmonic Voice Visualizer**: Fluid, breathing luminescence sphere that dynamically reacts to audio frequencies.
+  - **Speech-to-Text (STT)**: Real-time voice transcription streaming directly into the candidate response dock.
+  - **Text-to-Speech (TTS)**: Articulate JARVIS voice synthesis delivering questions aloud with executive composure.
 - **🧠 Multi-Provider LLM Engine with Instant Failover**:
   - Primary: **Groq** (`qwen/qwen3.8-27b`, `openai/gpt-oss-120b`) for ultra-low latency conversational streaming.
   - Fallback 1: **Google Gemini** (`gemini-2.5-flash`).
   - Fallback 2: **OpenAI** (`gpt-4o-mini`).
-  - Fallback 3: **J.A.R.V.I.S. Heuristic Engine** for deterministic local assessment.
-- **🎭 High-Tech Assessment Protocols (Personas)**:
-  - **J.A.R.V.I.S. Protocol**: Ultra-intelligent, polite yet exacting, deeply analytical, strictly verifies technical accuracy and trade-offs.
-  - **FAANG Bar Raiser**: Formal, probing edge cases, scalability limits, and optimal complexity.
-  - **Staff Architect Protocol**: Focuses on clean architecture, boundary isolation, maintainability, and clear communication.
-  - **Startup CTO Protocol**: Pragmatic, fast-paced, testing real-world incident recovery and execution velocity.
+  - Fallback 3: **JARVIS Deterministic Engine** for calibrated local scoring.
+- **🎭 Executive Evaluator Personas**:
+  - **JARVIS Executive Assessor**: Objective, balanced, deeply analytical, strictly verifies architectural rigor and trade-offs.
+  - **Bar Raiser Interviewer**: Formal, probing edge cases, scalability limits, and optimal complexity.
+  - **Principal Systems Architect**: Focuses on engineering craftsmanship, boundary isolation, maintainability, and clean communication.
+  - **Engineering Director / CTO**: Pragmatic, assessing real-world production incident response and delivery velocity.
 - **🎯 Tailored Career Tracks & Difficulty**:
-  - Full-Stack Engineer, Backend Systems, Frontend Architect, AI/ML & LLM Engineer, Data Science, DevOps/Cloud, Product Manager, and Behavioral (STAR).
-  - Seniority levels: *Junior (0-2 YOE)*, *Mid-Level (2-5 YOE)*, *Senior (5-8 YOE)*, *Lead / Staff Architect (8+ YOE)*.
+  - Full-Stack Engineer, Backend Systems, Frontend Architect, AI/ML & LLM Engineer, Data Science, DevOps/Cloud, Technical Product Manager, and Behavioral/Leadership (STAR).
+  - Seniority levels: *Junior (0-2 YOE)*, *Mid-Level (2-5 YOE)*, *Senior (5-8 YOE)*, *Lead / Principal Architect (8+ YOE)*.
 - **💡 Real-Time Assistance & Architectural Depth Telemetry**:
-  - Smart **"Request Tactical Hint"** button to guide candidates without giving away solutions.
-  - Live **Depth Telemetry Counter** indicating response word count and warning against shallow submissions.
-- **📊 Executive Assessment Dossier & Scorecard**:
-  - **Overall Score (0-100)** and Calibrated Verdict Badge (*Strong Hire*, *Hire*, *Leaning Hire*, *Leaning No Hire*, *No Hire*).
+  - Smart **"Request Guidance"** button to guide candidates without revealing full solutions.
+  - Live **Depth Telemetry Counter** indicating response word count and advising candidates on necessary architectural depth.
+- **📊 Executive Assessment Scorecard**:
+  - **Overall Score (0-100)** and Calibrated Verdict Pill (*Strong Hire*, *Hire*, *Leaning Hire*, *No Hire*).
   - **4-Axis Pillar Skills**: Technical Competence, Problem Solving & Logic, Communication & Precision, Systematic Architecture.
-  - **Validated Strengths & Critical Growth Areas**: Actionable feedback bullets.
+  - **Validated Strengths & Development Areas**: Concrete, actionable feedback.
   - **Round-by-Round Breakdown**: Candidate response summaries, individual scores, critique, and ideal architectural benchmark outlines.
-  - **Export Options**: Download Dossier as JSON or Print/Save to PDF.
+  - **Export Options**: Download Report as JSON or Print/Save to PDF.
 
 ---
 
@@ -44,20 +43,20 @@
 
 ```mermaid
 graph TD
-    Client["Frontend SPA (Arc Reactor HUD / Web Speech / Web Audio SFX)"]
+    Client["Frontend SPA (Acoustic Orb / Web Speech / Minimalist Luxury Dark UI)"]
     FastAPI["FastAPI Web Server (aiagent.server)"]
     Agent["InterviewAgent Lifecycle Engine (aiagent.agent)"]
     Detector["Response Quality & Gibberish Detector"]
     LLMChain["Multi-Provider LLM Fallback (Groq / Gemini / OpenAI)"]
     Heuristic["Calibrated Heuristic Scorer"]
-    Dossier["Hiring Committee Evaluator"]
+    Scorecard["Executive Scorecard Evaluator"]
 
     Client <-->|REST API + Web Speech| FastAPI
     FastAPI <--> Agent
     Agent --> Detector
     Agent <--> LLMChain
     LLMChain -.->|Fallback if offline| Heuristic
-    Agent --> Dossier
+    Agent --> Scorecard
 ```
 
 ---
@@ -66,7 +65,7 @@ graph TD
 
 ### 1. Prerequisites
 - Python `>= 3.10`
-- Virtual environment or `uv` / `pip`
+- Virtual environment or `pip`
 
 ### 2. Environment Variables
 Verify your `.env` file in the project root:
@@ -91,7 +90,7 @@ python -m aiagent
 ```
 
 ### 4. Open in Browser
-Visit **[http://localhost:8000](http://localhost:8000)** to engage J.A.R.V.I.S.!
+Visit **[http://localhost:8000](http://localhost:8000)** to launch JARVIS.
 
 ---
 
@@ -104,7 +103,7 @@ The repository comes pre-configured with `vercel.json` and `api/index.py` for im
 1. **Commit and push your code to GitHub**:
    ```bash
    git add .
-   git commit -m "feat: J.A.R.V.I.S. high-tech HUD & calibrated accuracy engine"
+   git commit -m "feat: executive JARVIS UI & calibrated accuracy engine"
    git push origin main
    ```
 2. **Import into Vercel**:
@@ -117,13 +116,6 @@ The repository comes pre-configured with `vercel.json` and `api/index.py` for im
    - `OPENAI_API_KEY`: Your OpenAI API key
 4. **Deploy**:
    Vercel will build the serverless functions and provide your live production URL (e.g., `https://aiagent-liart.vercel.app`).
-
-### Option B: Deploy via Vercel CLI
-
-```bash
-# Log in and deploy
-vercel --prod
-```
 
 ---
 
@@ -142,12 +134,12 @@ aiagent/
 ├── src/
 │   └── aiagent/
 │       ├── __init__.py            # CLI entrypoint
-│       ├── agent.py               # J.A.R.V.I.S. Core Engine, Accuracy Rubric & Calibrated Scorer
+│       ├── agent.py               # JARVIS Core Engine, Accuracy Rubric & Calibrated Scorer
 │       ├── server.py              # FastAPI REST endpoints & Resilient Session Hydration
 │       └── static/
-│           ├── index.html         # High-Tech Arc Reactor HUD Interface
-│           ├── styles.css         # Cyber Obsidian & Stark Arc Reactor Design System
-│           └── app.js             # Web Speech, Audio SFX, Visualizer & Calibrated Controller
+│           ├── index.html         # Executive Assessment Interface
+│           ├── styles.css         # Modern Luxury Dark UI Design System
+│           └── app.js             # Web Speech, Acoustic Orb & Calibrated Controller
 └── updatedaiagent/
     └── 1-aiagent.ipynb            # Interactive step-by-step Jupyter Notebook tutorial
 ```
@@ -160,11 +152,11 @@ aiagent/
 | :--- | :--- | :--- |
 | `/api/health` | `GET` | Health check & active LLM provider telemetry |
 | `/api/roles` | `GET` | Available career tracks |
-| `/api/personas` | `GET` | Available J.A.R.V.I.S. assessment protocols |
+| `/api/personas` | `GET` | Available evaluator personas |
 | `/api/interview/start` | `POST` | Initialize an assessment session & receive Round 1 |
-| `/api/interview/respond` | `POST` | Submit candidate answer, receive feedback & next diagnostic question |
-| `/api/interview/hint` | `POST` | Request an architectural tactical hint |
-| `/api/interview/finish` | `POST` | Complete interview & generate comprehensive evaluation dossier |
+| `/api/interview/respond` | `POST` | Submit candidate answer, receive feedback & next question |
+| `/api/interview/hint` | `POST` | Request architectural guidance |
+| `/api/interview/finish` | `POST` | Complete interview & generate comprehensive evaluation scorecard |
 | `/api/interview/session/{id}` | `GET` | Retrieve full interview transcript & telemetry |
 
 ---
